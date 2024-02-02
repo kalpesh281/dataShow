@@ -22,7 +22,8 @@ const mongoUrl = "mongodb+srv://shenvakalpesh4:wfAVqZvHUsvmLwoC@cluster0.jbmjolz
 
 
 mongoose.connect(mongoUrl, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
 }).then(() => { console.log("Connected to database"); })
     .catch(e => console.log(e))
 
@@ -80,38 +81,47 @@ app.post("/login", async (req, res) => {
 });
 
 
-const filesDir = path.join(__dirname, 'files');
-
-
-app.use((req, res, next) => {
-    if (!fs.existsSync(filesDir)) {
-        fs.mkdirSync(filesDir);
-    }
-    next();
+const fileSchema = new mongoose.Schema({
+    fileName: String,
+    fileType: String,
+    fileContent: Buffer,
 });
 
 
-app.post('/upload', (req, res) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).json({ error: 'No files were uploaded.' });
-    }
+const File = mongoose.model("Model",fileSchema)
 
-    const uploadedFile = req.files.file;
-    const fileName = uploadedFile.name;
-    const filePath = path.join(filesDir, fileName);
 
-    uploadedFile.mv(filePath, (err) => {
-        if (err) {
-            return res.status(500).json({ error: 'File upload failed.' });
+app.post("/upload", async (req, res) => {
+    // console.log(req.files)
+    try {
+        if (!req.files || Object.keys(req.files).length === 0) {
+            return res.status(400).json({ error: 'No files were uploaded.' });
         }
 
-        return res.status(200).json({ status: 'File uploaded successfully.', filePath });
-    });
+        const uploadedFile = req.files.file;
+        const fileName = uploadedFile.name;
+        const fileType = uploadedFile.mimetype;
+
+        if(!fileType){
+            res.send({error:"Upload Proper File"})
+        }
+
+        // Convert the file content to a Buffer
+        const fileContent = uploadedFile.data;
+
+        // Save file information to MongoDB
+        const file = new File({
+            fileName,
+            fileType,
+            fileContent,
+        });
+        await file.save();
+
+        return res.status(200).json({ status: 'ok' });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
 });
 
-
-
-
-//mongodb+srv://shenvakalpesh4:wfAVqZvHUsvmLwoC@cluster0.jbmjolz.mongodb.net/?retryWrites=true&w=majority
-
-//

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 
-const LoginPage = () => {
+const LoginPage = (props) => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -49,6 +49,8 @@ const LoginPage = () => {
             console.error('Error during login:', error.message);
         }
     };
+
+    
 
     return (
         <>
