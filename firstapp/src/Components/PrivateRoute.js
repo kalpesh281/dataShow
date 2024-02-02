@@ -1,7 +1,7 @@
 import React from 'react'
 import { Navigate } from "react-router-dom"
 
-function Protected(props) {
+function PrivateRoute(props) {
     if (!localStorage.getItem('token')) {
         return <Navigate to='/login' />
     }
@@ -10,4 +10,4 @@ function Protected(props) {
     )
 }
 
-export default Protected
+export default PrivateRoute

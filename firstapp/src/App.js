@@ -9,9 +9,7 @@ import LoginPage from "./Components/Login";
 function App() {
   return (
     <div className="App">
-      {/* <RegisterPage /> */}
-      {/* <LoginPage/> */}
-      {/* <RegisterPage/> */}
+
       <Router>
         <Routes>
           <Route exact path="/" element={<Home />} />
