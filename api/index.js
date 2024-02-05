@@ -8,6 +8,7 @@ const path = require('path');
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser')
 const fileUpload = require("express-fileupload")
+const XLSX = require('xlsx');
 
 
 app.use(fileUpload());
@@ -34,7 +35,6 @@ app.listen(8000, () => {
 
 
 require("./userData");
-
 const User = mongoose.model("UserInfo");
 
 app.post("/register", async (req, res) => {
@@ -88,11 +88,11 @@ const fileSchema = new mongoose.Schema({
 });
 
 
-const File = mongoose.model("Model",fileSchema)
+const File = mongoose.model("Model", fileSchema)
 
 
 app.post("/upload", async (req, res) => {
-    // console.log(req.files)
+    
     try {
         if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).json({ error: 'No files were uploaded.' });
@@ -102,14 +102,14 @@ app.post("/upload", async (req, res) => {
         const fileName = uploadedFile.name;
         const fileType = uploadedFile.mimetype;
 
-        if(!fileType){
-            res.send({error:"Upload Proper File"})
+        if (!fileType) {
+            res.send({ error: "Upload Proper File" })
         }
 
-        // Convert the file content to a Buffer
+  
         const fileContent = uploadedFile.data;
 
-        // Save file information to MongoDB
+
         const file = new File({
             fileName,
             fileType,
@@ -124,4 +124,28 @@ app.post("/upload", async (req, res) => {
     }
 
 });
+require("./IpData")
+const IP = mongoose.model("InputData")
+
+app.post("/ipdata", async (req, res) => {
+    const formData = req.body;
+    const ws = XLSX.utils.json_to_sheet([formData]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
+
+    const fileType = 'xlsx';
+    const fileContent = XLSX.write(wb, {
+        bookType: fileType, type: "buffer"
+    })
+
+    IP.create({ ...formData, fileContent, fileType })
+        .then(() => {
+            return res.status(200).json({ status: 'ok' });
+        })
+        .catch((err) => {
+            console.error(err);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        });
+
+})
 
