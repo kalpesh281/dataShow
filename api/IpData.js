@@ -9,12 +9,13 @@ const IpData = new mongoose.Schema({
     city: String,
     email: { type: String, unique: true },
     profession: String,
-    nickname: String,
+    nickname: [String],
     hobbies: [String],
     fileContent: Buffer,
     fileType: String,
-}, {
-    collation: "InputData"
-})
+}, { collation: { locale: 'en_US', strength: 1 } },
+    {
+        collation: "InputData"
+    })
 
 mongoose.model("InputData", IpData)

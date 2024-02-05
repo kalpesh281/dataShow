@@ -92,7 +92,7 @@ const File = mongoose.model("Model", fileSchema)
 
 
 app.post("/upload", async (req, res) => {
-    
+
     try {
         if (!req.files || Object.keys(req.files).length === 0) {
             return res.status(400).json({ error: 'No files were uploaded.' });
@@ -106,7 +106,7 @@ app.post("/upload", async (req, res) => {
             res.send({ error: "Upload Proper File" })
         }
 
-  
+
         const fileContent = uploadedFile.data;
 
 
@@ -127,25 +127,89 @@ app.post("/upload", async (req, res) => {
 require("./IpData")
 const IP = mongoose.model("InputData")
 
+// app.post("/ipdata", async (req, res) => {
+//     const formData = req.body;
+
+//     IP.findOne({ email: formData.email })
+//         .then(existingData => {
+//             if (existingData) {
+
+//                 existingData.name = formData.name;
+//                 existingData.surname = formData.surname;
+//                 existingData.age=formData.age
+//                 existingData.mobile=formData.age
+//                 existingData.profession=formData.profession
+//                 existingData.nickname = formData.nickname
+//                 existingData.hobbies=formData.hobbies
+//                 return existingData.save();
+//             } else {
+
+//                 return IP.create({ ...formData });
+//             }
+//         })
+//         .then(updatedData => {
+
+//             const ws = XLSX.utils.json_to_sheet([updatedData.toObject()]);
+//             const wb = XLSX.utils.book_new();
+//             XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
+
+//             const fileType = 'xlsx';
+//             const fileContent = XLSX.write(wb, { bookType: fileType, type: 'buffer' });
+
+
+//             updatedData.fileContent = fileContent;
+//             updatedData.fileType = fileType;
+
+//             return updatedData.save();
+//         })
+//         .then(() => {
+//             return res.status(200).json({ status: 'ok' });
+//         })
+//         .catch(err => {
+//             console.error(err);
+//             return res.status(500).json({ error: 'Internal Server Error' });
+//         });
+// });
+
+
+
 app.post("/ipdata", async (req, res) => {
-    const formData = req.body;
-    const ws = XLSX.utils.json_to_sheet([formData]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
+    try {
+        const formData = req.body;
+        let updatedData;
 
-    const fileType = 'xlsx';
-    const fileContent = XLSX.write(wb, {
-        bookType: fileType, type: "buffer"
-    })
+        const existingData = await IP.findOne({ email: formData.email });
 
-    IP.create({ ...formData, fileContent, fileType })
-        .then(() => {
-            return res.status(200).json({ status: 'ok' });
-        })
-        .catch((err) => {
-            console.error(err);
-            return res.status(500).json({ error: 'Internal Server Error' });
-        });
+        if (existingData) {
+            existingData.name = formData.name;
+            existingData.surname = formData.surname;
+            existingData.age = formData.age;
+            existingData.mobile = formData.mobile;
+            existingData.profession = formData.profession;
+            existingData.nickname = formData.nickname;
+            existingData.hobbies = formData.hobbies;
 
+            updatedData = await existingData.save();
+        } else {
+            updatedData = await IP.create({ ...formData });
+        }
+
+        const allData = await IP.find();
+        const wsAllData = XLSX.utils.json_to_sheet(allData.map(data => data.toObject()));
+        const wbAllData = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wbAllData, wsAllData, 'Sheet 1');
+        const fileTypeAllData = 'xlsx';
+        const fileContentAllData = XLSX.write(wbAllData, { bookType: fileTypeAllData, type: 'buffer' });
+
+
+        await IP.updateOne({}, { fileContentAllData, fileTypeAllData });
+
+        return res.status(200).json({ status: 'ok' });
+    } catch (error) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+
+    }
 })
+
 
