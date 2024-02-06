@@ -8,8 +8,11 @@ function Home() {
     };
 
     const clickD = () => {
-        window.location.href = "/data";
+        window.location.href = "/edata";
     };
+    const clickIP = () => {
+        window.location.href = "/ipdata";
+    }
 
     return (
         <>
@@ -25,9 +28,16 @@ function Home() {
                     </div>
 
                     <div className="col-md-4">
-                        <button className="btn btn-success btn-lg btn-block" onClick={clickD}>
+                        <button className="btn btn-danger btn-lg btn-block" onClick={clickIP}>
                             Input Data
                         </button>
+
+                    </div>
+                    <div className="col-md-4" style={{ color: "red" }}>
+                        <button className="btn btn-success btn-lg btn-block" onClick={clickD} >
+                            DataBase
+                        </button>
+
                     </div>
                 </div>
             </div>

@@ -19,10 +19,10 @@ function Data() {
         e.preventDefault();
         const { name, surname, age, mobile, city, email, profession, nickname, hobbies } = form;
 
-        if (name === '' || surname === '' || email === '' || age === '' || mobile === '' || city === '' || profession === '' || nickname === '' || hobbies === '') {
-            alert('Please enter all the data first');
-            return;
-        }
+        // if (name === '' || surname === '' || email === '' || age === '' || mobile === '' || city === '' || profession === '' || nickname === '' || hobbies === '') {
+        //     alert('Please enter all the data first');
+        //     return;
+        // }
 
         console.log(name, surname, age, mobile, city, email, profession, nickname, hobbies);
 
@@ -30,7 +30,7 @@ function Data() {
             const response = await axios.post('http://localhost:8000/ipdata', form);
             if (response.status === 200) {
                 alert('Data and file uploaded successfully');
-            }
+            } 
         } catch (error) {
             console.log(error);
         }

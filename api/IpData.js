@@ -7,15 +7,14 @@ const IpData = new mongoose.Schema({
     mobile: { type: Number, unique: true },
     age: Number,
     city: String,
-    email: { type: String, unique: true },
+    email: { type: String, unique: true ,require},
     profession: String,
     nickname: [String],
     hobbies: [String],
-    fileContent: Buffer,
-    fileType: String,
-}, { collation: { locale: 'en_US', strength: 1 } },
+   
+},
     {
-        collation: "InputData"
+        collection: "InputData"
     })
 
 mongoose.model("InputData", IpData)
