@@ -9,6 +9,9 @@ const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser')
 const fileUpload = require("express-fileupload")
 const XLSX = require('xlsx');
+const fs = require('fs');
+const fastcsv = require('fast-csv');
+
 
 
 app.use(fileUpload());
@@ -128,88 +131,100 @@ require("./IpData")
 const IP = mongoose.model("InputData")
 
 // app.post("/ipdata", async (req, res) => {
-//     const formData = req.body;
+//     try {
+//         const formData = req.body;
+//         let updatedData;
 
-//     IP.findOne({ email: formData.email })
-//         .then(existingData => {
-//             if (existingData) {
+//         const existingData = await IP.findOne({ email: formData.email });
 
-//                 existingData.name = formData.name;
-//                 existingData.surname = formData.surname;
-//                 existingData.age=formData.age
-//                 existingData.mobile=formData.age
-//                 existingData.profession=formData.profession
-//                 existingData.nickname = formData.nickname
-//                 existingData.hobbies=formData.hobbies
-//                 return existingData.save();
-//             } else {
+//         if (existingData) {
+//             existingData.name = formData.name;
+//             existingData.surname = formData.surname;
+//             existingData.age = formData.age;
+//             existingData.mobile = formData.mobile;
+//             existingData.profession = formData.profession;
+//             existingData.nickname = formData.nickname;
+//             existingData.hobbies = formData.hobbies;
 
-//                 return IP.create({ ...formData });
-//             }
-//         })
-//         .then(updatedData => {
+//             updatedData = await existingData.save();
+//         } else {
+//             updatedData = await IP.create({ ...formData });
+//         }
 
-//             const ws = XLSX.utils.json_to_sheet([updatedData.toObject()]);
-//             const wb = XLSX.utils.book_new();
-//             XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
-
-//             const fileType = 'xlsx';
-//             const fileContent = XLSX.write(wb, { bookType: fileType, type: 'buffer' });
-
-
-//             updatedData.fileContent = fileContent;
-//             updatedData.fileType = fileType;
-
-//             return updatedData.save();
-//         })
-//         .then(() => {
-//             return res.status(200).json({ status: 'ok' });
-//         })
-//         .catch(err => {
-//             console.error(err);
-//             return res.status(500).json({ error: 'Internal Server Error' });
-//         });
-// });
+//         const allData = await IP.find();
+//         const wsAllData = XLSX.utils.json_to_sheet(allData.map(data => data.toObject()));
+//         const wbAllData = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(wbAllData, wsAllData, 'Sheet 1');
+//         const fileTypeAllData = 'xlsx';
+//         const fileContentAllData = XLSX.write(wbAllData, { bookType: fileTypeAllData, type: 'buffer' });
 
 
+//         await IP.updateOne({}, { fileContentAllData, fileTypeAllData });
 
-app.post("/ipdata", async (req, res) => {
+//         return res.status(200).json({ status: 'ok' });
+//     } catch (error) {
+//         console.error(err);
+//         return res.status(500).json({ error: 'Internal Server Error' });
+
+//     }
+// })
+
+
+app.post('/ipdata', async (req, res) => {
     try {
         const formData = req.body;
         let updatedData;
 
-        const existingData = await IP.findOne({ email: formData.email });
+
+        const existingData = await IP.findOne({ email: formData.email, processed: true });
 
         if (existingData) {
-            existingData.name = formData.name;
-            existingData.surname = formData.surname;
-            existingData.age = formData.age;
-            existingData.mobile = formData.mobile;
-            existingData.profession = formData.profession;
-            existingData.nickname = formData.nickname;
-            existingData.hobbies = formData.hobbies;
 
-            updatedData = await existingData.save();
+            return res.status(200).json({ status: 'ok' });
+        }
+
+
+        const existingUnprocessedData = await IP.findOne({ email: formData.email, processed: false });
+
+        if (existingUnprocessedData) {
+
+            existingUnprocessedData.name = formData.name;
+            existingUnprocessedData.surname = formData.surname;
+            existingUnprocessedData.age = formData.age;
+            existingUnprocessedData.mobile = formData.mobile;
+            existingUnprocessedData.profession = formData.profession;
+            existingUnprocessedData.nickname = formData.nickname;
+            existingUnprocessedData.hobbies = formData.hobbies;
+
+            updatedData = await existingUnprocessedData.save();
         } else {
+
             updatedData = await IP.create({ ...formData });
         }
 
-        const allData = await IP.find();
-        const wsAllData = XLSX.utils.json_to_sheet(allData.map(data => data.toObject()));
-        const wbAllData = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wbAllData, wsAllData, 'Sheet 1');
-        const fileTypeAllData = 'xlsx';
-        const fileContentAllData = XLSX.write(wbAllData, { bookType: fileTypeAllData, type: 'buffer' });
+
+        updatedData.processed = true;
+        await updatedData.save();
 
 
-        await IP.updateOne({}, { fileContentAllData, fileTypeAllData });
+        const csvFilePath = './data.csv';
+        const csvStream = fs.createWriteStream(csvFilePath, { flags: 'a' }); 
+        fastcsv.write([updatedData.toObject()], { headers: true })
+            .pipe(csvStream);
+
+
+        const fileContentAllData = fs.readFileSync(csvFilePath);
+        const fileTypeAllData = 'csv';
+
+        await IP.updateOne({}, { fileContent: fileContentAllData, fileType: fileTypeAllData });
 
         return res.status(200).json({ status: 'ok' });
     } catch (error) {
-        console.error(err);
+        console.error(error);
         return res.status(500).json({ error: 'Internal Server Error' });
-
     }
+});
+
+app.get("/database", async (re, res) => {
+
 })
-
-
