@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Link } from 'react-router-dom'
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function Data() {
     const [form, setForm] = useState({
@@ -14,16 +17,27 @@ function Data() {
         nickname: '',
         hobbies: '',
     });
+    const [mobileNumbers, setMobileNumbers] = useState([]);
 
     const handleSubit = async (e) => {
         e.preventDefault();
         const { name, surname, age, mobile, city, email, profession, nickname, hobbies } = form;
 
-        // if (name === '' || surname === '' || email === '' || age === '' || mobile === '' || city === '' || profession === '' || nickname === '' || hobbies === '') {
-        //     alert('Please enter all the data first');
-        //     return;
-        // }
 
+        if (!/^\d{10}$/.test(mobile)) {
+            alert('Please enter a valid 10-digit mobile number');
+            return;
+        }
+
+
+        if (!emailRegex.test(email)) {
+            alert('Please enter a valid email address');
+            return;
+        }
+        if (mobileNumbers.includes(mobile)) {
+            alert('Mobile number already exists');
+            return;
+        }
         console.log(name, surname, age, mobile, city, email, profession, nickname, hobbies);
 
         try {
@@ -31,6 +45,7 @@ function Data() {
             if (response.status === 200) {
                 alert('Data and file uploaded successfully');
             }
+            setMobileNumbers([...mobileNumbers, mobile]);
         } catch (error) {
             console.log(error);
         }
@@ -50,17 +65,13 @@ function Data() {
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
-    const clickD = () => {
-        window.location.href = "/edata";
-    };
 
     return (
         <div className="container mt-5" style={{ height: "100vh" }}>
-            <button style={{ background: "green", color: "white", width: "100px", height: "50px", borderRadius: "12px", marginLeft: "1160px" }} onClick={clickD}>Databse</button>
+            <button style={{ background: "green", color: "white", width: "100px", height: "50px", borderRadius: "12px", marginLeft: "1160px" }} > <Link to="/edata" style={{ color: "white", textDecoration: "none" }}>Database</Link> </button>
             <div className="card" style={{ width: "60%", marginLeft: "10px", marginTop: "-70px" }}>
                 <div className="card-body">
                     <form onSubmit={handleSubit}>
-
                         <h1 className="text-center mb-4">Input Data</h1>
                         <div className="form-group">
                             <label>Name:</label>

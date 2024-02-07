@@ -1,18 +1,10 @@
 import React from 'react';
 // import './App.css'
+import { Link } from 'react-router-dom'
 
 
 function Home() {
-    const clickF = () => {
-        window.location.href = "/file";
-    };
-
-    const clickD = () => {
-        window.location.href = "/edata";
-    };
-    const clickIP = () => {
-        window.location.href = "/ipdata";
-    }
+    
 
     return (
         <>
@@ -22,20 +14,20 @@ function Home() {
 
                 <div className="row justify-content-center" style={{ boxSizing: "border-box", marginLeft: "220px" }}>
                     <div className="col-md-4">
-                        <button className="btn btn-primary btn-lg btn-block" onClick={clickF}>
-                            File Upload
+                        <button className="btn btn-primary btn-lg btn-block" >
+                            <Link to="/file" style={{ color: "white", textDecoration: "none" }}>File Upload</Link>
                         </button>
                     </div>
 
                     <div className="col-md-4">
-                        <button className="btn btn-danger btn-lg btn-block" onClick={clickIP}>
-                            Input Data
+                        <button className="btn btn-danger btn-lg btn-block" >
+                            <Link to="/ipdata" style={{ color: "white", textDecoration: "none" }}>InputData</Link>
                         </button>
 
                     </div>
-                    <div className="col-md-4" style={{ color: "red" }}>
-                        <button className="btn btn-success btn-lg btn-block" onClick={clickD} >
-                            DataBase
+                    <div className="col-md-4" style={{ color: "white", }}>
+                        <button className="btn btn-success btn-lg btn-block" >
+                            <Link to="/edata" style={{ color: "white", textDecoration: "none" }}>Database</Link>
                         </button>
 
                     </div>
