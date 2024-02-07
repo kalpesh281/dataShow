@@ -146,11 +146,11 @@ app.post("/ipdata", async (req, res) => {
             existingData.hobbies = formData.hobbies;
 
             updatedData = await existingData.save();
-            console.log(updatedData)
+            // console.log(updatedData)
             return res.status(200).json({ status: 'ok', data: updatedData });
         } else {
             const updatedData = await IP.create(formData)
-            console.log(updatedData)
+            // console.log(updatedData)
             return res.status(200).json({ status: 'ok', data: updatedData });
         }
 
