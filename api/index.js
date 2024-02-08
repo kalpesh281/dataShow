@@ -8,7 +8,7 @@ const path = require('path');
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser')
 const fileUpload = require("express-fileupload")
-// const XLSX = require('xlsx');
+
 const fs = require('fs');
 const fastcsv = require('fast-csv');
 
@@ -171,42 +171,5 @@ app.get("/ipdata/all", async (req, res) => {
     }
 })
 
-// app.post("/ipdata", async (req, res) => {
-//     try {
-//         const formData = req.body;
-//         let updatedData;
 
-//         const existingData = await IP.findOne({ email: formData.email });
-
-//         if (existingData) {
-//             existingData.name = formData.name;
-//             existingData.surname = formData.surname;
-//             existingData.age = formData.age;
-//             existingData.mobile = formData.mobile;
-//             existingData.profession = formData.profession;
-//             existingData.nickname = formData.nickname;
-//             existingData.hobbies = formData.hobbies;
-
-//             updatedData = await existingData.save();
-//         } else {
-//             updatedData = await IP.create({ ...formData });
-//         }
-
-//         const allData = await IP.find();
-//         const wsAllData = XLSX.utils.json_to_sheet(allData.map(data => data.toObject()));
-//         const wbAllData = XLSX.utils.book_new();
-//         XLSX.utils.book_append_sheet(wbAllData, wsAllData, 'Sheet 1');
-//         const fileTypeAllData = 'xlsx';
-//         const fileContentAllData = XLSX.write(wbAllData, { bookType: fileTypeAllData, type: 'buffer' });
-
-
-//         await IP.updateOne({}, { fileContentAllData, fileTypeAllData });
-
-//         return res.status(200).json({ status: 'ok' });
-//     } catch (error) {
-//         console.error(err);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-
-//     }
-// })
 

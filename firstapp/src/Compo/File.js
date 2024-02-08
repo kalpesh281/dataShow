@@ -1,8 +1,6 @@
-// Ruf.js
-
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 const File = () => {
     const [excelFile, setExcelFile] = useState(null);
@@ -86,7 +84,7 @@ const File = () => {
     };
 
     return (
-        <div className="container mt-5">
+        <div className="container mt-5"><h1 style={{ marginBottom: "20px", fontWeight: "bold" }}>File Upload</h1>
             <div className="p-4 border rounded">
                 <label htmlFor="excelFile">Upload Excel File:</label>
                 <input
@@ -174,7 +172,7 @@ const File = () => {
                                         ))}
                                     </tr>
                                 ))}
-                            </tbody> 
+                            </tbody>
                         </table>
                     </div>
                 )}
