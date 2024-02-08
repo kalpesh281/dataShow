@@ -120,5 +120,4 @@ function Data() {
         </div>
     );
 }
-
 export default Data;

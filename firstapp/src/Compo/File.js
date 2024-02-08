@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
-
+import ReactPaginate from 'react-paginate';
 
 const File = () => {
     const [excelFile, setExcelFile] = useState(null);
     const [showDropdowns, setShowDropdowns] = useState(false);
-    const manualDropdownLabels = ['Name', 'Surname', 'Email', 'Moblie No', 'City', 'Profession', 'Age'];
+    const manualDropdownLabels = ['Name', 'Surname', 'Email', 'Mobile No', 'City', 'Profession', 'Age'];
     const [dropdownOptions, setDropdownOptions] = useState(Array(7).fill([]));
     const [selectedOptions, setSelectedOptions] = useState(Array(7).fill(''));
     const [excelData, setExcelData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 10;
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
@@ -21,6 +24,8 @@ const File = () => {
         setDropdownOptions(Array(7).fill([]));
         setSelectedOptions(Array(7).fill(''));
         setExcelData([]);
+        setSearchQuery('');
+        setCurrentPage(0);
     };
 
     const handleShowHeadings = () => {
@@ -52,8 +57,8 @@ const File = () => {
     };
 
     const handleShowContent = () => {
-        if (!excelFile || selectedOptions.some((option) => !option)) {
-            console.error('Please select options for all dropdowns');
+        if (!excelFile) {
+            console.error('No Excel file uploaded');
             return;
         }
 
@@ -69,9 +74,14 @@ const File = () => {
 
             const filteredDataset = parsedData.slice(1).map((row) => {
                 const filteredRow = {};
-                selectedOptions.forEach((option, index) => {
-                    const columnIndex = headers.indexOf(option);
-                    filteredRow[manualDropdownLabels[index]] = row[columnIndex];
+                manualDropdownLabels.forEach((label, index) => {
+                    const option = selectedOptions[index];
+                    if (option) {
+                        const columnIndex = headers.indexOf(option);
+                        filteredRow[label] = row[columnIndex];
+                    } else {
+                        filteredRow[label] = null; // Assign null for fields with no selected option
+                    }
                 });
                 return filteredRow;
             });
@@ -83,16 +93,40 @@ const File = () => {
         reader.readAsArrayBuffer(excelFile);
     };
 
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const filterDataBySearchQuery = () => {
+        if (searchQuery.trim() === '') {
+            return excelData;
+        }
+
+        return excelData.filter((row) => {
+            return Object.values(row).some(
+                (value) =>
+                    typeof value === 'string' &&
+                    value.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        });
+    };
+
+    const handlePageChange = ({ selected }) => {
+        setCurrentPage(selected);
+    };
+
+    const getPaginatedData = () => {
+        const startIndex = currentPage * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        return filterDataBySearchQuery().slice(startIndex, endIndex);
+    };
+
     return (
-        <div className="container mt-5"><h1 style={{ marginBottom: "20px", fontWeight: "bold" }}>File Upload</h1>
+        <div className="container mt-5">
+            <h1 style={{ marginBottom: '20px', fontWeight: 'bold' }}>File Upload</h1>
             <div className="p-4 border rounded">
                 <label htmlFor="excelFile">Upload Excel File:</label>
-                <input
-                    type="file"
-                    id="excelFile"
-                    accept=".xlsx, .xls"
-                    onChange={handleFileUpload}
-                />
+                <input type="file" id="excelFile" accept=".xlsx, .xls" onChange={handleFileUpload} />
 
                 <button
                     className="btn btn-primary mt-2"
@@ -127,7 +161,9 @@ const File = () => {
                                                 onChange={(event) => handleDropdownChange(index, event)}
                                                 className="form-select"
                                             >
-                                                <option value="" disabled>Select a heading</option>
+                                                <option value="" disabled>
+                                                    Select a heading
+                                                </option>
                                                 {options.map((heading, headingIndex) => (
                                                     <option key={headingIndex} value={heading}>
                                                         {heading}
@@ -151,9 +187,24 @@ const File = () => {
                     </div>
                 )}
 
-                {excelFile && <p className="mt-3">{`Uploaded Excel File: ${excelFile.name}`}</p>}
+                {excelFile && (
+                    <p className="mt-3">{`Uploaded Excel File: ${excelFile.name}`}</p>
+                )}
 
-                {excelData.length > 0 && (
+                {/* Search functionality */}
+                <div className="mt-3">
+                    <label htmlFor="searchQuery">Search:</label>
+                    <input
+                        type="text"
+                        id="searchQuery"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        className="form-control"
+                    />
+                </div>
+
+                {/* Display paginated data */}
+                {filterDataBySearchQuery().length > 0 && (
                     <div className="mt-4">
                         <p>Content:</p>
                         <table className="table table-bordered">
@@ -165,7 +216,7 @@ const File = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {excelData.map((row, rowIndex) => (
+                                {getPaginatedData().map((row, rowIndex) => (
                                     <tr key={rowIndex}>
                                         {manualDropdownLabels.map((label, index) => (
                                             <td key={index}>{row[label]}</td>
@@ -174,6 +225,18 @@ const File = () => {
                                 ))}
                             </tbody>
                         </table>
+                        <ReactPaginate
+                            pageCount={Math.ceil(filterDataBySearchQuery().length / itemsPerPage)}
+                            onPageChange={handlePageChange}
+                            containerClassName="pagination"
+                            pageClassName="page-item"
+                            pageLinkClassName="page-link"
+                            activeClassName="active"
+                            previousClassName="page-item"
+                            nextClassName="page-item"
+                            previousLinkClassName="page-link"
+                            nextLinkClassName="page-link"
+                        />
                     </div>
                 )}
             </div>
