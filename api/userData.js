@@ -1,9 +1,11 @@
 const mongoose = require("mongoose");
 
 const UserDetailsSchema = new mongoose.Schema({
-    name:String,
+    fname: String,
+    lname:String,
     email: { type: String, unique: true },
     password: String,
+    userType: String 
 },
     {
         collection: "UserInfo",

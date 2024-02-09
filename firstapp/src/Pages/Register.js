@@ -7,8 +7,15 @@ const RegisterPage = () => {
         email: '',
         password: '',
     });
+    const [userType, setUserType] = useState("")
+    const [key, setKey] = useState("")
 
     const handleSubmit = async (e) => {
+        if (userType === "Admin" && key !== "D@7a") {
+            e.preventDefault();
+            alert("Invalid Admin")
+        }
+
         e.preventDefault();
         const { fname, lname, email, password } = formData;
 
@@ -31,6 +38,7 @@ const RegisterPage = () => {
                     lname,
                     email,
                     password,
+                    userType
                 }),
             });
 
@@ -53,6 +61,23 @@ const RegisterPage = () => {
                 <div className="col-md-6">
                     <form onSubmit={handleSubmit}>
                         <h2 className="mb-4">Register</h2>
+                        <div>
+                            Register As  <input type='radio' name='UserType' value="User" onChange={(e) => setUserType(e.target.value)} />User
+                            <input type='radio' name='UserType' value="Admin" onChange={(e) => setUserType(e.target.value)} />Admin
+                        </div>{
+                            userType === "Admin" ? <div className="mb-3">
+                                <label className="form-label">Secret Key:</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Secret Key"
+                                    name="Secret Key"
+
+                                    onChange={(e) => setKey(e.target.value)}
+                                />
+                            </div> : null
+                        }
+
                         <div className="mb-3">
                             <label className="form-label">First name:</label>
                             <input

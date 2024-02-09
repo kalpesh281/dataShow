@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
 
 
-const LoginPage = (props) => {
+const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
     });
+    window.localStorage.setItem("token", "");
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { email, password } = formData;
 
+
         if (email === '' || password === '') {
             alert('Please enter the data first');
             return;
         }
-        if(!email){
+        if (!email) {
             alert("Please Enter Valid Email")
         }
 
@@ -37,20 +40,38 @@ const LoginPage = (props) => {
             });
 
             const data = await response.json();
-            console.log(data, 'User Registered');
+            console.log(data.data, '<=User Registered');
 
             if (data.status === 'ok') {
-                alert('Login successful');
-                window.localStorage.setItem('token', data.data);
-                window.localStorage.setItem('loggedIn', true);
-                window.location.href = '/';
+
+                const userType = data.data.userType;
+
+
+
+                if (userType === "Admin") {
+                    // setAdmin(true)
+                    alert('Login successful Admin');
+                    window.localStorage.setItem('token', data.data.token);
+                    window.localStorage.setItem('loggedIn', true);
+
+                    window.localStorage.setItem('email', email);
+                    window.localStorage.setItem('password', password);
+                    window.location.href = '/';
+                } else {
+                    alert('Login successful User');
+                    window.localStorage.setItem('token', data.data.token);
+                    window.localStorage.setItem('loggedIn', true);
+                    window.localStorage.setItem('email', email);
+                    window.localStorage.setItem('password', password);
+                    window.location.href = '/userpage';
+                }
             }
         } catch (error) {
             console.error('Error during login:', error.message);
         }
     };
 
-    
+
 
     return (
         <>
