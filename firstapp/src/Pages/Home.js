@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 
 function Home() {
-    
+
 
     return (
         <>
@@ -30,6 +30,11 @@ function Home() {
                             <Link to="/edata" style={{ color: "white", textDecoration: "none" }}>Database</Link>
                         </button>
 
+                    </div>
+
+                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-success btn-lg btn-block" >
+                        <Link to="panel" style={{ color: "white", textDecoration: "none" }} >List Of User</Link>
+                    </button>
                     </div>
                 </div>
             </div>
