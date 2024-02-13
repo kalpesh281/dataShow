@@ -6,6 +6,8 @@ const RegisterPage = () => {
         lname: '',
         email: '',
         password: '',
+        department:''
+        
     });
     const [userType, setUserType] = useState("")
     const [key, setKey] = useState("")
@@ -26,9 +28,9 @@ const RegisterPage = () => {
             return;
         }
 
-        const { fname, lname, email, password } = formData;
+        const { fname, lname, email, password ,department } = formData;
 
-        if (fname === '' || lname === '' || email === '' || password === '' || role === '') {
+        if (fname === '' || lname === '' || email === '' || password === '' || department==='' || role === '') {
             alert('Please enter all the data first');
             return;
         }
@@ -48,7 +50,8 @@ const RegisterPage = () => {
                     email,
                     password,
                     userType,
-                    role
+                    role,
+                    department
                 }),
             });
 
@@ -123,6 +126,18 @@ const RegisterPage = () => {
                                 placeholder="Enter email"
                                 name="email"
                                 value={formData.email}
+                                onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Department:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter department "
+                                name="department"
+                                value={formData.department}
                                 onChange={handleChange}
                             />
                         </div>

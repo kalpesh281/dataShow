@@ -5,6 +5,7 @@ import Profile from './Profile';
 
 
 function Home() {
+    const userType = localStorage.getItem('userType');
 
     return (
         <>
@@ -31,11 +32,13 @@ function Home() {
                         </button>
 
                     </div>
-
-                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-outline-success btn-lg btn-block" >
-                        <Link to="panel" style={{ color: "black", textDecoration: "none" }} >List Of User</Link>
-                    </button>
-                    </div>
+                    {userType === 'Admin' && (
+                        <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}>
+                            <button className="btn btn-outline-success btn-lg btn-block">
+                                <Link to="panel" style={{ color: "black", textDecoration: "none" }}>List Of User</Link>
+                            </button>
+                        </div>
+                    )}
 
                     <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-outline-info btn-lg btn-block" >
                         <Link to="login" style={{ color: "black", textDecoration: "none" }} >LogOut</Link>

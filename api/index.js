@@ -9,6 +9,7 @@ const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser')
 const fileUpload = require("express-fileupload")
 
+
 const fs = require('fs');
 const fastcsv = require('fast-csv');
 
@@ -41,7 +42,7 @@ require("./userData");
 const User = mongoose.model("UserInfo");
 
 app.post("/register", async (req, res) => {
-    const { fname, lname, email, password, userType, role } = req.body;
+    const { fname, lname, email, password, userType, role, department } = req.body;
     const encryptedPassword = await bcrypt.hash(password, 10);
     try {
         const oldUser = await User.findOne({ email });
@@ -54,7 +55,8 @@ app.post("/register", async (req, res) => {
             email,
             password: encryptedPassword,
             userType,
-            role
+            role,
+            department
         });
         res.send({ status: "ok" })
     }
@@ -68,7 +70,7 @@ app.post("/register", async (req, res) => {
 
 
 app.post("/login", async (req, res) => {
-    const { email, password, role } = req.body;
+    const { fname, lname, email, password, role, department } = req.body;
     const user = await User.findOne({ email })
 
     if (!user) {
@@ -79,14 +81,13 @@ app.post("/login", async (req, res) => {
 
 
         if (user.userType === 'Admin') {
-            return res.json({ status: 'ok', data: { token: token, userType: 'Admin', role: user.role, email: user.email } });
+            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'Admin', role: user.role, email: user.email, department: user.department } });
         } else {
-            return res.json({ status: 'ok', data: { token: token, userType: 'User', role: role, email: user.email } });
+            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'User', role: role, email: user.email, department: user.department } });
         }
     }
     return res.json({ status: "error", error: "Invalid password" })
 });
-
 
 const fileSchema = new mongoose.Schema({
     fileName: String,
@@ -178,7 +179,7 @@ app.get("/ipdata/all", async (req, res) => {
 
 app.get('/users', async (req, res) => {
     try {
-        const users = await User.find({}, 'fname lname email role userType');
+        const users = await User.find({}, 'fname lname email role userType department');
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error.message);
@@ -187,3 +188,50 @@ app.get('/users', async (req, res) => {
 });
 
 
+
+
+const checkPermissions = (requiredPermission) => {
+    return (req, res, next) => {
+        const userRole = req.body.role;
+
+        if (userRole === 'Admin' || userRole === requiredPermission) {
+            next();
+        } else {
+            res.status(403).json({ error: "Permission denied" });
+        }
+    };
+};
+
+
+
+app.post("/ipdata", checkPermissions('readWrite'), async (req, res) => {
+
+});
+
+app.get("/ipdata/all", checkPermissions('readOnly'), async (req, res) => {
+
+});
+
+app.post("/upload", checkPermissions('readWrite'), async (req, res) => {
+
+});
+
+app.get('/users', checkPermissions('Admin'), async (req, res) => {
+
+});
+
+
+
+
+
+app.delete('/users/:userId', checkPermissions('Admin'), async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        await User.findByIdAndDelete(userId);
+        res.json({ status: 'ok', message: 'User deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting user:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
