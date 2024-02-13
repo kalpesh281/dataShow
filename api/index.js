@@ -179,7 +179,7 @@ app.get("/ipdata/all", async (req, res) => {
 
 app.get('/users', async (req, res) => {
     try {
-        const users = await User.find({}, 'fname lname email role userType department');
+        const users = await User.find({}, 'fname lname email role userType department permissions');
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error.message);
@@ -187,51 +187,46 @@ app.get('/users', async (req, res) => {
     }
 });
 
+app.get('/info',async(req,res)=>{
+    const {email,permissions}=req.body
 
-
-
-const checkPermissions = (requiredPermission) => {
-    return (req, res, next) => {
-        const userRole = req.body.role;
-
-        if (userRole === 'Admin' || userRole === requiredPermission) {
-            next();
-        } else {
-            res.status(403).json({ error: "Permission denied" });
-        }
-    };
-};
-
-
-
-app.post("/ipdata", checkPermissions('readWrite'), async (req, res) => {
-
-});
-
-app.get("/ipdata/all", checkPermissions('readOnly'), async (req, res) => {
-
-});
-
-app.post("/upload", checkPermissions('readWrite'), async (req, res) => {
-
-});
-
-app.get('/users', checkPermissions('Admin'), async (req, res) => {
-
-});
-
-
-
-
-
-app.delete('/users/:userId', checkPermissions('Admin'), async (req, res) => {
     try {
-        const userId = req.params.userId;
-
-        await User.findByIdAndDelete(userId);
-        res.json({ status: 'ok', message: 'User deleted successfully' });
+        userP = await User.find({},'permissions email role fname lname ')
+        res.json(userP)
     } catch (error) {
-        console.error('Error deleting user:', error.message);
+        console.error('Error fetching users:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+})
+
+
+
+
+
+// app.post('/permission', async (req, res) => {
+//     const { email, permission } = req.body
+
+//     try {
+//         const userP = User.findOneAndUpdate({ email: email }, { $push: { permissions: permission } })
+//         res.json(userP)
+//     } catch (error) {
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+
+    
+// })
+
+
+app.post('/permission', async (req, res) => {
+    const { email, permission } = req.body;
+
+    try {
+        const updatedUser = await User.findOneAndUpdate({ email: email }, { $set: { permissions: [permission] } }, { new: true });
+        res.json(updatedUser);
+    } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+

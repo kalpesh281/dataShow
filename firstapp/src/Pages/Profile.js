@@ -7,6 +7,8 @@ function Profile() {
     const fname = localStorage.getItem('fname')
     //const userType= localStorage.getItem('fname')
     const lname = localStorage.getItem('lname')
+
+    
     return (
         <div>
             <div className="mt-4">
@@ -22,3 +24,14 @@ function Profile() {
 }
 
 export default Profile
+
+
+
+
+/*
+
+-make one api for getmyinfo
+-after getting the data from server store permission in localstorage
+-{email}=req.body
+
+*/

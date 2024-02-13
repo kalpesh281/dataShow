@@ -20,19 +20,58 @@ const AdminPanel = () => {
 
                 const data = await response.json();
                 setUsers(data);
+                console.log(data)
             } catch (error) {
                 console.error('Error fetching users:', error.message);
             }
+
         };
+
+
+
+
+
+
 
         fetchUsers();
     }, []);
 
-    // Define a function to handle radio button changes
-    const handlePermissionChange = (userId, permission) => {
-        // Update the user's permission in the state or send a request to the server
-        // based on your application logic
-        console.log(`User ${userId} permission changed to: ${permission}`);
+    // const handlePermissionChange = (userEmail, permission) => {
+    //     let newUser=users.map((user)=>{
+    //         if(user.email==userEmail){
+    //             return {
+    //                 ...user,
+    //                 permissions:permission
+    //             }
+    //         }
+    //         else{
+    //             return user
+    //         }
+    //     })
+    //     setUsers(newUser)
+    //     console.log(`User ${userEmail} permission changed to: ${permission}`);
+    // };
+    const handlePermissionChange = async (userEmail, permission) => {
+        try {
+            const response = await fetch('http://localhost:8000/permission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: userEmail, permission }),
+            });
+
+            const updatedUser = await response.json();
+
+            const f = window.localStorage.setItem('permission', updatedUser.permission)
+            console.log(f)
+
+            setUsers(users.map((user) => (user.email === userEmail ? updatedUser : user)));
+
+            console.log(`User ${userEmail} permission changed to: ${permission}`);
+        } catch (error) {
+            console.error('Error updating permission:', error.message);
+        }
     };
 
     return (
@@ -66,26 +105,28 @@ const AdminPanel = () => {
                                         <input
                                             type="radio"
                                             name={`permission_${user._id}`}
+                                            checked={user?.permissions?.includes('RW')}
                                             value="RW"
-                                            onChange={() => handlePermissionChange(user._id, 'RW')}
+                                            onChange={() => handlePermissionChange(user.email, 'RW')}
                                         />
                                         RW
                                     </label>
                                     <label style={{ marginRight: "10px" }}>
                                         <input
                                             type="radio"
-                                            name={`permission_${user._id}`}
+                                            name={`permission_${user.email}`}
+                                            checked={user?.permissions?.includes('RO')}
                                             value="RO"
-                                            onChange={() => handlePermissionChange(user._id, 'RO')}
+                                            onChange={() => handlePermissionChange(user.email, 'RO')}
                                         />
                                         RO
                                     </label>
                                     <label style={{ marginRight: "10px" }}>
                                         <input
                                             type="radio"
-                                            name={`permission_${user._id}`}
+                                            name={`permission_${user.email}`}
                                             value="N"
-                                            onChange={() => handlePermissionChange(user._id, 'N')}
+                                            onChange={() => handlePermissionChange(user.email, 'N')}
                                         />
                                         N
                                     </label>

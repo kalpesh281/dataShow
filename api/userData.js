@@ -8,6 +8,7 @@ const UserDetailsSchema = new mongoose.Schema({
     userType: String,
     role: String,
     department: String,
+    permissions:[String]
 },
     {
         collection: "UserInfo",

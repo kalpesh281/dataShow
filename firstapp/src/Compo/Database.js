@@ -6,6 +6,8 @@ import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
 const Database = () => {
+    const permissions = JSON.parse(localStorage.getItem('permissions'))
+    console.log(permissions)
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,6 +21,7 @@ const Database = () => {
                 const response = await axios.get('http://localhost:8000/ipdata/all');
                 const indexedData = response.data.map((item, index) => ({ ...item, key: index + 1 }));
                 setData(indexedData);
+
             } catch (error) {
                 console.error(error);
             }
@@ -128,7 +131,7 @@ const Database = () => {
 
     return (
         <div className="container mt-5">
-            <div className="mb-3">
+            {permissions.includes('RW') && <div className="mb-3">
                 <button className="btn btn-success" onClick={handleExportExcel} style={{ margin: '8px' }}>
                     Export to Excel
                 </button>
@@ -136,13 +139,13 @@ const Database = () => {
                     Export to PDF
                 </button>
 
-            </div>
+            </div>}
             <h1 className="mb-4">Data from Database</h1>
             <div
                 className="shadow p-3 mb-5 bg-white rounded table-responsive"
                 style={{ maxHeight: '78vh' }}
             >
-                <div className="mb-3">
+                {permissions.includes('RW') ?<div className="mb-3">
                     <label className="form-label">Search:</label>
                     <input
                         type="text"
@@ -158,7 +161,8 @@ const Database = () => {
                     >
                         Search
                     </button>
-                </div>
+                </div>:null}
+
 
                 <table className="table table-bordered table-striped">
                     <thead className="thead-dark">
