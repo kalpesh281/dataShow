@@ -37,11 +37,7 @@ function App() {
             <Route path="/file" element={<Private><File /></Private>} />
             <Route path="/userpage" element={<Private><UserHome /></Private>} />
 
-            {/* <Route exact path="/" element={<Home />} />
-            <Route path="/edata" element={<Database />} />
-            <Route path="/ipdata" element={<Data />} />
-            <Route path="/file" element={<File />} />
-            <Route path="/userpage" element={<UserHome />} /> */}
+          
             
             <Route path="/panel" element={<AdminPanel />} />
             <Route path="/register" element={<RegisterPage />} />

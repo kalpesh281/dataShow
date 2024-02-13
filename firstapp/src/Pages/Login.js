@@ -5,16 +5,17 @@ const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
+        role: ''
     });
     window.localStorage.setItem("token", "");
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { email, password } = formData;
+        const { email, password, role } = formData;
 
 
-        if (email === '' || password === '') {
+        if (email === '' || password === '' || role === '') {
             alert('Please enter the data first');
             return;
         }
@@ -36,6 +37,7 @@ const LoginPage = () => {
                 body: JSON.stringify({
                     email,
                     password,
+                    role,
                 }),
             });
 
@@ -43,30 +45,29 @@ const LoginPage = () => {
             console.log(data.data, '<=User Registered');
 
             if (data.status === 'ok') {
+                const { token, userType, role, email } = data.data;
 
-                const userType = data.data.userType;
+                // Store user data in localStorage
+                window.localStorage.setItem('token', token);
+                window.localStorage.setItem('role', JSON.stringify(role));
+                window.localStorage.setItem('password', password);
+                window.localStorage.setItem('loggedIn', true);
+                // window.localStorage.setItem('userRole', inputRole);
+                window.localStorage.setItem("role", role)
+                window.localStorage.setItem('userType', userType);
+                window.localStorage.setItem('email', email);
 
-
-
-                if (userType === "Admin") {
-                    // setAdmin(true)
+                if (userType === 'Admin') {
                     alert('Login successful Admin');
-                    window.localStorage.setItem('token', data.data.token);
-                    window.localStorage.setItem('loggedIn', true);
-
-                    window.localStorage.setItem('email', email);
-                    window.localStorage.setItem('password', password);
-                    window.location.href = '/';
                 } else {
                     alert('Login successful User');
-                    window.localStorage.setItem('token', data.data.token);
-                    window.localStorage.setItem('loggedIn', true);
-                    window.localStorage.setItem('email', email);
-                    window.localStorage.setItem('password', password);
-                    window.location.href = '/userpage';
+                    // window.location.href = '/userpage';
                 }
+                window.location.href = '/';
             }
-        } catch (error) {
+        }
+
+        catch (error) {
             console.error('Error during login:', error.message);
         }
     };
@@ -88,7 +89,14 @@ const LoginPage = () => {
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                             </div>
-
+                            <div className="mb-3">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    placeholder="Role"
+                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                />
+                            </div>
                             <div className="mb-3">
                                 <input
                                     type="password"

@@ -34,6 +34,8 @@ const AdminPanel = () => {
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
+                        <th>Role</th>
+                        <th>UserType</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +44,8 @@ const AdminPanel = () => {
                             <td>{user.fname}</td>
                             <td>{user.lname}</td>
                             <td>{user.email}</td>
+                            <td>{user.role}</td>
+                            <td>{user.userType}</td>
                         </tr>
                     ))}
                 </tbody>

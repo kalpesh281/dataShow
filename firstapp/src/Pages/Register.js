@@ -9,17 +9,26 @@ const RegisterPage = () => {
     });
     const [userType, setUserType] = useState("")
     const [key, setKey] = useState("")
+    const [role, setRole] = useState("")
 
     const handleSubmit = async (e) => {
-        if (userType === "Admin" && key !== "D@7a") {
-            e.preventDefault();
-            alert("Invalid Admin")
+        e.preventDefault();
+
+
+        if (!userType) {
+            alert('Please select User or Admin');
+            return;
         }
 
-        e.preventDefault();
+
+        if (userType === "Admin" && key !== "D@7a") {
+            alert("Invalid Admin");
+            return;
+        }
+
         const { fname, lname, email, password } = formData;
 
-        if (fname === '' || lname === '' || email === '' || password === '') {
+        if (fname === '' || lname === '' || email === '' || password === '' || role === '') {
             alert('Please enter all the data first');
             return;
         }
@@ -38,7 +47,8 @@ const RegisterPage = () => {
                     lname,
                     email,
                     password,
-                    userType
+                    userType,
+                    role
                 }),
             });
 
@@ -54,6 +64,9 @@ const RegisterPage = () => {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+    const handleRole = (e) => {
+        setRole(e.target.value);
+    }
 
     return (
         <div className="container mt-5">
@@ -111,6 +124,18 @@ const RegisterPage = () => {
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label className="form-label">Role:</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Enter role"
+                                name="roles"
+                                value={role}
+                                onChange={handleRole}
                             />
                         </div>
 

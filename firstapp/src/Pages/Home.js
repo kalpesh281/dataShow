@@ -1,10 +1,10 @@
 import React from 'react';
 // import './App.css'
 import { Link } from 'react-router-dom'
+import Profile from './Profile';
 
 
 function Home() {
-
 
     return (
         <>
@@ -14,28 +14,36 @@ function Home() {
 
                 <div className="row justify-content-center" style={{ boxSizing: "border-box", marginLeft: "220px" }}>
                     <div className="col-md-4">
-                        <button className="btn btn-primary btn-lg btn-block" >
-                            <Link to="/file" style={{ color: "white", textDecoration: "none" }}>File Upload</Link>
+                        <button className="btn btn-outline-primary btn-lg btn-block" >
+                            <Link to="/file" style={{ color: "black", textDecoration: "none" }}>File Upload</Link>
                         </button>
                     </div>
 
                     <div className="col-md-4">
-                        <button className="btn btn-danger btn-lg btn-block" >
-                            <Link to="/ipdata" style={{ color: "white", textDecoration: "none" }}>InputData</Link>
+                        <button className="btn btn-outline-danger btn-lg btn-block" >
+                            <Link to="/ipdata" style={{ color: "black", textDecoration: "none" }}>InputData</Link>
                         </button>
 
                     </div>
                     <div className="col-md-4" style={{ color: "white", }}>
-                        <button className="btn btn-success btn-lg btn-block" >
-                            <Link to="/edata" style={{ color: "white", textDecoration: "none" }}>Database</Link>
+                        <button className="btn btn-outline-warning btn-lg btn-block" >
+                            <Link to="/edata" style={{ color: "black", textDecoration: "none" }}>Database</Link>
                         </button>
 
                     </div>
 
-                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-success btn-lg btn-block" >
-                        <Link to="panel" style={{ color: "white", textDecoration: "none" }} >List Of User</Link>
+                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-outline-success btn-lg btn-block" >
+                        <Link to="panel" style={{ color: "black", textDecoration: "none" }} >List Of User</Link>
                     </button>
                     </div>
+
+                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-outline-info btn-lg btn-block" >
+                        <Link to="login" style={{ color: "black", textDecoration: "none" }} >LogOut</Link>
+                    </button>
+                    </div>
+
+
+                    <Profile />
                 </div>
             </div>
         </>

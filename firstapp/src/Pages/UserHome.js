@@ -2,6 +2,9 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 function userHome() {
+    const userEmail = localStorage.getItem('email');
+    const userRole = localStorage.getItem('role');
+    const userType = localStorage.getItem('userType');
     return (
         <div>
             <div className="container mt-5">
@@ -10,18 +13,30 @@ function userHome() {
 
                 <div className="row justify-content-center" style={{ boxSizing: "border-box", marginLeft: "220px" }}>
                     <div className="col-md-4">
-                        <button className="btn btn-primary btn-lg btn-block" >
-                            <Link to="/file" style={{ color: "white", textDecoration: "none" }}>File Upload</Link>
+                        <button className="btn btn-outline-primary btn-lg btn-block" >
+                            <Link to="/file" style={{ color: "black", textDecoration: "none" }}>File Upload</Link>
                         </button>
                     </div>
 
                     <div className="col-md-4">
-                        <button className="btn btn-danger btn-lg btn-block" >
-                            <Link to="/ipdata" style={{ color: "white", textDecoration: "none" }}>InputData</Link>
+                        <button className="btn btn-outline-danger btn-lg btn-block" >
+                            <Link to="/ipdata" style={{ color: "black", textDecoration: "none" }}>InputData</Link>
                         </button>
 
                     </div>
-                    
+
+                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-outline-info btn-lg btn-block" >
+                        <Link to="/login" style={{ color: "black", textDecoration: "none" }} >LogOut</Link>
+                    </button>
+                    </div>
+
+
+                    <div className="mt-4">
+                        <p>Email: {userEmail}</p>
+                        <p>Role: {userRole}</p>
+                        <p>User Type: {userType}</p>
+                    </div>
+
                 </div>
             </div>
         </div>

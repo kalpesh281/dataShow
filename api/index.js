@@ -41,7 +41,7 @@ require("./userData");
 const User = mongoose.model("UserInfo");
 
 app.post("/register", async (req, res) => {
-    const { fname, lname, email, password, userType } = req.body;
+    const { fname, lname, email, password, userType, role } = req.body;
     const encryptedPassword = await bcrypt.hash(password, 10);
     try {
         const oldUser = await User.findOne({ email });
@@ -53,7 +53,8 @@ app.post("/register", async (req, res) => {
             lname,
             email,
             password: encryptedPassword,
-            userType
+            userType,
+            role
         });
         res.send({ status: "ok" })
     }
@@ -67,9 +68,9 @@ app.post("/register", async (req, res) => {
 
 
 app.post("/login", async (req, res) => {
-    const { email, password , } = req.body;
+    const { email, password, role } = req.body;
     const user = await User.findOne({ email })
-    
+
     if (!user) {
         return res.send({ error: "User Not Found" });
     }
@@ -78,9 +79,9 @@ app.post("/login", async (req, res) => {
 
 
         if (user.userType === 'Admin') {
-            return res.json({ status: 'ok', data: { token, userType: 'Admin' } });
+            return res.json({ status: 'ok', data: { token: token, userType: 'Admin', role: user.role, email: user.email } });
         } else {
-            return res.json({ status: 'ok', data: { token, userType: 'User' } });
+            return res.json({ status: 'ok', data: { token: token, userType: 'User', role: role, email: user.email } });
         }
     }
     return res.json({ status: "error", error: "Invalid password" })
@@ -177,7 +178,7 @@ app.get("/ipdata/all", async (req, res) => {
 
 app.get('/users', async (req, res) => {
     try {
-        const users = await User.find({}, 'fname lname email');
+        const users = await User.find({}, 'fname lname email role userType');
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error.message);
