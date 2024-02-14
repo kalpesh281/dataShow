@@ -20,6 +20,7 @@ app.use(express.static("files"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 const jwt = require("jsonwebtoken");
+const { userInfo } = require("os");
 
 const JWT_SECRET = "H123()efurthfbhjhgjhgjthgg$%^&[]1244fheyfetftfvfgrv??><>:.ffff"
 
@@ -70,7 +71,7 @@ app.post("/register", async (req, res) => {
 
 
 app.post("/login", async (req, res) => {
-    const { fname, lname, email, password, role, department } = req.body;
+    const { fname, lname, email, password, role, department, permissions } = req.body;
     const user = await User.findOne({ email })
 
     if (!user) {
@@ -83,7 +84,7 @@ app.post("/login", async (req, res) => {
         if (user.userType === 'Admin') {
             return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'Admin', role: user.role, email: user.email, department: user.department } });
         } else {
-            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'User', role: role, email: user.email, department: user.department } });
+            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'User', role: role, email: user.email, department: user.department, } });
         }
     }
     return res.json({ status: "error", error: "Invalid password" })
@@ -186,36 +187,17 @@ app.get('/users', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-app.get('/info',async(req,res)=>{
-    const {email,permissions}=req.body
-
+app.get('/info', async (req, res) => {
+    // const { email, permission } = req.body
     try {
-        userP = await User.find({},'permissions email role fname lname ')
+        userP = await User.find({}, ' permissions email')
         res.json(userP)
+        // console.log(userP)
     } catch (error) {
         console.error('Error fetching users:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 })
-
-
-
-
-
-// app.post('/permission', async (req, res) => {
-//     const { email, permission } = req.body
-
-//     try {
-//         const userP = User.findOneAndUpdate({ email: email }, { $push: { permissions: permission } })
-//         res.json(userP)
-//     } catch (error) {
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-
-    
-// })
-
 
 app.post('/permission', async (req, res) => {
     const { email, permission } = req.body;

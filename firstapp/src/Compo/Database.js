@@ -130,7 +130,8 @@ const Database = () => {
 
 
     return (
-        <div className="container mt-5">
+        <>
+         <div className="container mt-5">
             {permissions.includes('RW') && <div className="mb-3">
                 <button className="btn btn-success" onClick={handleExportExcel} style={{ margin: '8px' }}>
                     Export to Excel
@@ -145,7 +146,7 @@ const Database = () => {
                 className="shadow p-3 mb-5 bg-white rounded table-responsive"
                 style={{ maxHeight: '78vh' }}
             >
-                {permissions.includes('RW') ?<div className="mb-3">
+                {permissions.includes('RW') ? <div className="mb-3">
                     <label className="form-label">Search:</label>
                     <input
                         type="text"
@@ -161,7 +162,7 @@ const Database = () => {
                     >
                         Search
                     </button>
-                </div>:null}
+                </div> : null}
 
 
                 <table className="table table-bordered table-striped">
@@ -213,7 +214,7 @@ const Database = () => {
                     />
                 </div>
             </div>
-        </div>
+        </div></>
     );
 };
 export default Database;

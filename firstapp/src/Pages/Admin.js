@@ -36,21 +36,7 @@ const AdminPanel = () => {
         fetchUsers();
     }, []);
 
-    // const handlePermissionChange = (userEmail, permission) => {
-    //     let newUser=users.map((user)=>{
-    //         if(user.email==userEmail){
-    //             return {
-    //                 ...user,
-    //                 permissions:permission
-    //             }
-    //         }
-    //         else{
-    //             return user
-    //         }
-    //     })
-    //     setUsers(newUser)
-    //     console.log(`User ${userEmail} permission changed to: ${permission}`);
-    // };
+
     const handlePermissionChange = async (userEmail, permission) => {
         try {
             const response = await fetch('http://localhost:8000/permission', {
@@ -63,8 +49,8 @@ const AdminPanel = () => {
 
             const updatedUser = await response.json();
 
-            const f = window.localStorage.setItem('permission', updatedUser.permission)
-            console.log(f)
+            // const f = window.localStorage.setItem('permission', updatedUser.permission)
+            console.log(updatedUser)
 
             setUsers(users.map((user) => (user.email === userEmail ? updatedUser : user)));
 
