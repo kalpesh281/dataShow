@@ -1,7 +1,8 @@
 import React from 'react';
 // import './App.css'
 import { Link } from 'react-router-dom'
-import Profile from './Profile';
+// import Profile from './Profile';
+import img1 from '../logo_u.png'
 
 
 function Home() {
@@ -9,8 +10,14 @@ function Home() {
 
     return (
         <>
-            <div className="container mt-5">
+            <div className="container mt-2">
+                <div><Link to='/profile' style={{ textDecoration: "none" }}><div style={{ marginLeft: "1280px", }}><img src={img1} alt='error' style={{ height: "120px", width: "100px" }} /></div><div style={{ marginLeft: "1310px", marginTop: "-25px" }}><p style={{ color: "black" }}>Profile</p></div>
+                </Link></div>
+
+
+
                 <h1 className="text-center" style={{ color: '#358ddc', fontWeight: "bold", marginBottom: "30px", fontSize: "55px" }}>Data Container</h1>
+
                 <h4 className="text-center mb-3" style={{ padding: "20px" }}>Please select any option...</h4>
 
                 <div className="row justify-content-center" style={{ boxSizing: "border-box", marginLeft: "220px" }}>
@@ -40,13 +47,10 @@ function Home() {
                         </div>
                     )}
 
-                    <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}> <button className="btn btn-outline-info btn-lg btn-block" >
-                        <Link to="login" style={{ color: "black", textDecoration: "none" }} >LogOut</Link>
-                    </button>
-                    </div>
 
 
-                    <Profile />
+
+
                 </div>
             </div>
         </>

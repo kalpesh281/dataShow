@@ -45,11 +45,18 @@ const User = mongoose.model("UserInfo");
 app.post("/register", async (req, res) => {
     const { fname, lname, email, password, userType, role, department } = req.body;
     const encryptedPassword = await bcrypt.hash(password, 10);
+
     try {
         const oldUser = await User.findOne({ email });
         if (oldUser) {
             return res.send({ error: "User Exists" });
         }
+
+        let permissions = ['N'];  
+        if (userType=== 'Admin') {
+            permissions = ['RW'];  
+        }
+
         await User.create({
             fname,
             lname,
@@ -58,15 +65,14 @@ app.post("/register", async (req, res) => {
             userType,
             role,
             department,
-            permissions:['N']
+            permissions,
         });
-        res.send({ status: "ok" })
-    }
 
-    catch (error) {
-        res.send({ status: "error" })
+        res.send({ status: "ok" });
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.send({ status: "error" });
     }
-
 });
 
 

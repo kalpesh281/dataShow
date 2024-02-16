@@ -15,6 +15,7 @@ import Database from "./Compo/Database";
 
 import Private from "./Compo/Private";
 import AdminPanel from "./Pages/Admin";
+import Profile from "./Pages/Profile";
 
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
             <Route path="/file" element={<Private><File /></Private>} />
             {/* <Route path="/userpage" element={<Private><UserHome /></Private>} /> */}
 
-
+            <Route path="/profile" element={<Private><Profile/></Private>} />
 
             <Route path="/panel" element={<AdminPanel />} />
             <Route path="/register" element={<RegisterPage />} />

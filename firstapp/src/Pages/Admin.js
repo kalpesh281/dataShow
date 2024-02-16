@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminPanel = () => {
+    const [originalUsers, setOriginalUsers] = useState([]);
     const [users, setUsers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerms, setSearchTerms] = useState('');
     const usersPerPage = 10;
 
     useEffect(() => {
@@ -26,6 +28,7 @@ const AdminPanel = () => {
                         permissions: user.permissions && user.permissions.length > 0 ? user.permissions : ['N'],
                     }
                 ));
+                setOriginalUsers(usersWithDefaultPermission);
                 setUsers(usersWithDefaultPermission);
             } catch (error) {
                 console.error('Error fetching users:', error.message);
@@ -63,9 +66,43 @@ const AdminPanel = () => {
         setCurrentPage(pageNumber);
     };
 
+    const handleSearch = () => {
+        const searchTermsArray = searchTerms.split(',').map(term => term.trim());
+
+        if (searchTermsArray.length === 0) {
+            setUsers(originalUsers);
+        } else {
+            const filteredUsers = originalUsers.filter(user => {
+                return searchTermsArray.every(term =>
+                    Object.values(user).some(value =>
+                        typeof value === 'string' && value.toLowerCase().includes(term.toLowerCase())
+                    )
+                );
+            });
+
+            setCurrentPage(1);
+            setUsers(filteredUsers);
+        }
+    };
     return (
         <div className="container mt-5">
             <h2>User List</h2>
+
+            <div className="input-group mb-3" style={{ width: '300px' }}>
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search"
+                    value={searchTerms}
+                    onChange={(e) => setSearchTerms(e.target.value)}
+                />
+                <div className="input-group-append">
+                    <button className="btn btn-outline-secondary" type="button" onClick={handleSearch}>
+                        Search
+                    </button>
+                </div>
+            </div>
+
             <table className="table">
                 <thead>
                     <tr>
@@ -88,38 +125,40 @@ const AdminPanel = () => {
                             <td>{user.userType}</td>
                             <td>{user.department}</td>
                             <td>
-                                <div>
-                                    <label style={{ marginRight: "10px" }}>
-                                        <input
-                                            type="radio"
-                                            name={`permission_${user._id}`}
-                                            checked={user?.permissions?.includes('RW')}
-                                            value="RW"
-                                            onChange={() => handlePermissionChange(user.email, 'RW')}
-                                        />
-                                        RW
-                                    </label>
-                                    <label style={{ marginRight: "10px" }}>
-                                        <input
-                                            type="radio"
-                                            name={`permission_${user.email}`}
-                                            checked={user?.permissions?.includes('RO')}
-                                            value="RO"
-                                            onChange={() => handlePermissionChange(user.email, 'RO')}
-                                        />
-                                        RO
-                                    </label>
-                                    <label style={{ marginRight: "10px" }}>
-                                        <input
-                                            type="radio"
-                                            name={`permission_${user.email}`}
-                                            checked={user?.permissions?.includes('N')}
-                                            value="N"
-                                            onChange={() => handlePermissionChange(user.email, 'N')}
-                                        />
-                                        N
-                                    </label>
-                                </div>
+                                {user.userType !== 'Admin' ? (
+                                    <div>
+                                        <label style={{ marginRight: "10px" }}>
+                                            <input
+                                                type="radio"
+                                                name={`permission_${user._id}`}
+                                                checked={user?.permissions?.includes('RW')}
+                                                value="RW"
+                                                onChange={() => handlePermissionChange(user.email, 'RW')}
+                                            />
+                                            RW
+                                        </label>
+                                        <label style={{ marginRight: "10px" }}>
+                                            <input
+                                                type="radio"
+                                                name={`permission_${user.email}`}
+                                                checked={user?.permissions?.includes('RO')}
+                                                value="RO"
+                                                onChange={() => handlePermissionChange(user.email, 'RO')}
+                                            />
+                                            RO
+                                        </label>
+                                        <label style={{ marginRight: "10px" }}>
+                                            <input
+                                                type="radio"
+                                                name={`permission_${user.email}`}
+                                                checked={user?.permissions?.includes('N')}
+                                                value="N"
+                                                onChange={() => handlePermissionChange(user.email, 'N')}
+                                            />
+                                            N
+                                        </label>
+                                    </div>
+                                ) : null}
                             </td>
                         </tr>
                     ))}
