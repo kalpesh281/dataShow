@@ -1,11 +1,11 @@
 // AdminPanel.js
 import React, { useEffect, useState } from 'react';
-
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminPanel = () => {
     const [users, setUsers] = useState([]);
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10;
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -19,23 +19,25 @@ const AdminPanel = () => {
                 });
 
                 const data = await response.json();
-                setUsers(data);
-                console.log(data)
+                // Set default permission 'N' for users who haven't selected a permission
+                const usersWithDefaultPermission = data.map(user => (
+                    {
+                        ...user,
+                        permissions: user.permissions && user.permissions.length > 0 ? user.permissions : ['N'],
+                    }
+                ));
+                setUsers(usersWithDefaultPermission);
             } catch (error) {
                 console.error('Error fetching users:', error.message);
             }
-
         };
-
-
-
-
-
-
 
         fetchUsers();
     }, []);
 
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
 
     const handlePermissionChange = async (userEmail, permission) => {
         try {
@@ -49,15 +51,16 @@ const AdminPanel = () => {
 
             const updatedUser = await response.json();
 
-            // const f = window.localStorage.setItem('permission', updatedUser.permission)
-            console.log(updatedUser)
-
             setUsers(users.map((user) => (user.email === userEmail ? updatedUser : user)));
 
             console.log(`User ${userEmail} permission changed to: ${permission}`);
         } catch (error) {
             console.error('Error updating permission:', error.message);
         }
+    };
+
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
     return (
@@ -76,17 +79,16 @@ const AdminPanel = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user, index) => (
+                    {currentUsers.map((user, index) => (
                         <tr key={user._id}>
-                            <td>{index + 1}</td>
+                            <td>{index + 1 + indexOfFirstUser}</td>
                             <td>{user.fname} {user.lname}</td>
                             <td>{user.email}</td>
                             <td>{user.role}</td>
                             <td>{user.userType}</td>
                             <td>{user.department}</td>
                             <td>
-
-                                <div >
+                                <div>
                                     <label style={{ marginRight: "10px" }}>
                                         <input
                                             type="radio"
@@ -111,23 +113,29 @@ const AdminPanel = () => {
                                         <input
                                             type="radio"
                                             name={`permission_${user.email}`}
+                                            checked={user?.permissions?.includes('N')}
                                             value="N"
                                             onChange={() => handlePermissionChange(user.email, 'N')}
                                         />
                                         N
                                     </label>
-
                                 </div>
-
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <div style={{ display: 'grid' }}>
-                <p>R/W : Read/Write</p>
-                <p>RO : Read Only</p>
-                <p>N: None</p></div>
+            <nav aria-label="Page navigation example " style={{ marginLeft: "600px" }}>
+                <ul className="pagination">
+                    {Array.from({ length: Math.ceil(users.length / usersPerPage) }, (_, i) => (
+                        <li key={i + 1} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                            <button className="page-link" onClick={() => paginate(i + 1)}>
+                                {i + 1}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
         </div>
     );
 };

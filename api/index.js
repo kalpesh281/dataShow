@@ -57,7 +57,8 @@ app.post("/register", async (req, res) => {
             password: encryptedPassword,
             userType,
             role,
-            department
+            department,
+            permissions:['N']
         });
         res.send({ status: "ok" })
     }
@@ -82,9 +83,9 @@ app.post("/login", async (req, res) => {
 
 
         if (user.userType === 'Admin') {
-            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'Admin', role: user.role, email: user.email, department: user.department } });
+            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'Admin', role: user.role, email: user.email, department: user.department, permissions:user.permissions } });
         } else {
-            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'User', role: role, email: user.email, department: user.department, } });
+            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'User', role: user.role, email: user.email, department: user.department, permissions: user.permissions } });
         }
     }
     return res.json({ status: "error", error: "Invalid password" })

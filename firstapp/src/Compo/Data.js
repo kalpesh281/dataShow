@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom'
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function Data() {
+    const permissions = JSON.parse(localStorage.getItem('permissions'));
     const [form, setForm] = useState({
         name: '',
         surname: '',
@@ -66,58 +67,71 @@ function Data() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    return (
+    if (permissions.includes('N')) {
+        return (
+            <div className="container mt-5">
+                <h1 className="text-center mb-4">Input Data</h1>
+                <div className="alert alert-danger" role="alert">
+                    <h3>You do not have permission to access this page.</h3>
+                </div>
+            </div>
+        );
+    }
+    return (<>
         <div className="container mt-5" style={{ height: "100vh" }}>
-            <button style={{ background: "green", color: "white", width: "100px", height: "50px", borderRadius: "12px", marginLeft: "1160px" }} > <Link to="/edata" style={{ color: "white", textDecoration: "none" }}>Database</Link> </button>
-            <div className="card" style={{ width: "60%", marginLeft: "10px", marginTop: "-70px" }}>
-                <div className="card-body">
-                    <form onSubmit={handleSubit}>
-                        <h1 className="text-center mb-4">Input Data</h1>
-                        <div className="form-group">
-                            <label>Name:</label>
-                            <input type='text' className="form-control" name='name' value={form.name} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>Surname:</label>
-                            <input type='text' className="form-control" name='surname' value={form.surname} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>Moblie No:</label>
-                            <input type='number' className="form-control" name='mobile' value={form.mobile} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>Age:</label>
-                            <input type='number' className="form-control" name='age' value={form.age} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>City:</label>
-                            <input type='text' className="form-control" name='city' value={form.city} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>Email:</label>
-                            <input type='email' className="form-control" name='email' value={form.email} onChange={handleChange} style={{ background: "#280c0c08" }} required />
-                        </div>
-                        <div className="form-group">
-                            <label>Profession:</label>
-                            <input type='text' className="form-control" name='profession' value={form.profession} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>Nickname:</label>
-                            <input type='text' className="form-control" name='nickname' value={form.nickname} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <div className="form-group">
-                            <label>Hobbies:</label>
-                            <input type='text' className="form-control" name='hobbies' value={form.hobbies} onChange={handleChange} style={{ background: "#280c0c08" }} />
-                        </div>
-                        <button type='submit' className="btn btn-primary btn-block" style={{
-                            justifyContent: "center", marginLeft: "350px",
-                            marginTop: " 12px",
-                            padding: "12px"
-                        }}>Submit</button>
-                    </form>
+           <div>
+                <button style={{ background: "green", color: "white", width: "100px", height: "50px", borderRadius: "12px", marginLeft: "1160px" }} > <Link to="/edata" style={{ color: "white", textDecoration: "none" }}>Database</Link> </button>
+                <div className="card" style={{ width: "60%", marginLeft: "10px", marginTop: "-70px" }}>
+                    <div className="card-body">
+                        <form onSubmit={handleSubit}>
+                            <h1 className="text-center mb-4">Input Data</h1>
+                            <div className="form-group">
+                                <label>Name:</label>
+                                <input type='text' className="form-control" name='name' value={form.name} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>Surname:</label>
+                                <input type='text' className="form-control" name='surname' value={form.surname} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>Moblie No:</label>
+                                <input type='number' className="form-control" name='mobile' value={form.mobile} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>Age:</label>
+                                <input type='number' className="form-control" name='age' value={form.age} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>City:</label>
+                                <input type='text' className="form-control" name='city' value={form.city} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>Email:</label>
+                                <input type='email' className="form-control" name='email' value={form.email} onChange={handleChange} style={{ background: "#280c0c08" }} required />
+                            </div>
+                            <div className="form-group">
+                                <label>Profession:</label>
+                                <input type='text' className="form-control" name='profession' value={form.profession} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>Nickname:</label>
+                                <input type='text' className="form-control" name='nickname' value={form.nickname} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <div className="form-group">
+                                <label>Hobbies:</label>
+                                <input type='text' className="form-control" name='hobbies' value={form.hobbies} onChange={handleChange} style={{ background: "#280c0c08" }} />
+                            </div>
+                            <button type='submit' className="btn btn-primary btn-block" style={{
+                                justifyContent: "center", marginLeft: "350px",
+                                marginTop: " 12px",
+                                padding: "12px"
+                            }}>Submit</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+    </>
     );
 }
 export default Data;

@@ -45,7 +45,7 @@ const LoginPage = () => {
             console.log(data.data, '<=User Registered');
 
             if (data.status === 'ok') {
-                const { token, userType, role, email, department, fname, lname ,permissions} = data.data;
+                const { token, userType, role, email, department, fname, lname, permissions } = data.data;
 
                 // Store user data in localStorage
                 window.localStorage.setItem('token', token);
@@ -59,8 +59,9 @@ const LoginPage = () => {
                 window.localStorage.setItem("department", department)
                 window.localStorage.setItem("fname", fname)
                 window.localStorage.setItem("lname", lname)
-                console.log(localStorage.getItem("permissions",permissions))
-                
+                window.localStorage.setItem("permissions", JSON.stringify(permissions))
+                console.log()
+
                 if (userType === 'Admin') {
                     alert('Login successful Admin');
                 } else {

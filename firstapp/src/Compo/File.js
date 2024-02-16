@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import ReactPaginate from 'react-paginate';
+import FileU from './FileU';
 
 const File = () => {
+    const permissions = JSON.parse(localStorage.getItem('permissions'));
     const [excelFile, setExcelFile] = useState(null);
     const [showDropdowns, setShowDropdowns] = useState(false);
     const manualDropdownLabels = ['Name', 'Surname', 'Email', 'Mobile No', 'City', 'Profession', 'Age'];
@@ -120,9 +122,20 @@ const File = () => {
         const endIndex = startIndex + itemsPerPage;
         return filterDataBySearchQuery().slice(startIndex, endIndex);
     };
+    if (permissions.includes('N')) {
+        return (
+            <div className="container mt-5">
+                <h1 className="mb-4">File Upload</h1>
+                <div className="alert alert-danger" role="alert">
+                    <h3 className="mb-4">You do not have permission to access this page.</h3>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="container mt-5">
+        <>
+        {permissions.includes('RW') ?<div className="container mt-5">
             <h1 style={{ marginBottom: '20px', fontWeight: 'bold' }}>File Upload</h1>
             <div className="p-4 border rounded">
                 <label htmlFor="excelFile">Upload Excel File:</label>
@@ -240,7 +253,8 @@ const File = () => {
                     </div>
                 )}
             </div>
-        </div>
+        </div>:<FileU/>}
+        </>
     );
 };
 

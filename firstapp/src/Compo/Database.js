@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactPaginate from 'react-paginate';
@@ -6,8 +7,7 @@ import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
 const Database = () => {
-    const permissions = JSON.parse(localStorage.getItem('permissions'))
-    console.log(permissions)
+    const permissions = JSON.parse(localStorage.getItem('permissions'));
     const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
@@ -21,7 +21,6 @@ const Database = () => {
                 const response = await axios.get('http://localhost:8000/ipdata/all');
                 const indexedData = response.data.map((item, index) => ({ ...item, key: index + 1 }));
                 setData(indexedData);
-
             } catch (error) {
                 console.error(error);
             }
@@ -61,7 +60,6 @@ const Database = () => {
 
         setFilteredData(
             data.filter((item) => {
-                // eslint-disable-next-line array-callback-return
                 return Object.keys(searchObject).every((field) => {
                     const itemValue = item[field] && item[field].toString().toLowerCase();
 
@@ -103,7 +101,6 @@ const Database = () => {
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
-
         XLSX.writeFile(wb, 'data-export.xlsx');
     };
 
@@ -127,44 +124,53 @@ const Database = () => {
         doc.save('data-export.pdf');
     };
 
-
+    if (permissions.includes('N')) {
+        return (
+            <div className="container mt-5">
+                <h1 className="mb-4">Data from Database</h1>
+                <div className="alert alert-danger" role="alert">
+                    <h3 className="mb-4">You do not have permission to access this page.</h3>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <>
-         <div className="container mt-5">
-            {permissions.includes('RW') && <div className="mb-3">
-                <button className="btn btn-success" onClick={handleExportExcel} style={{ margin: '8px' }}>
-                    Export to Excel
-                </button>
-                <button className="btn btn-danger" onClick={handleExportPDF} style={{ margin: '8px' }}>
-                    Export to PDF
-                </button>
-
-            </div>}
+        <div className="container mt-5">
+            {permissions.includes('RW') && (
+                <div className="mb-3">
+                    <button className="btn btn-success" onClick={handleExportExcel} style={{ margin: '8px' }}>
+                        Export to Excel
+                    </button>
+                    <button className="btn btn-danger" onClick={handleExportPDF} style={{ margin: '8px' }}>
+                        Export to PDF
+                    </button>
+                </div>
+            )}
             <h1 className="mb-4">Data from Database</h1>
             <div
                 className="shadow p-3 mb-5 bg-white rounded table-responsive"
                 style={{ maxHeight: '78vh' }}
             >
-                {permissions.includes('RW') ? <div className="mb-3">
-                    <label className="form-label">Search:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Search here...."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button
-                        className="btn btn-primary ml-2"
-                        onClick={handleSearch}
-                        style={{ margin: '8px' }}
-                    >
-                        Search
-                    </button>
-                </div> : null}
-
-
+                {permissions.includes('RW') && (
+                    <div className="mb-3">
+                        <label className="form-label">Search:</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Search here...."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button
+                            className="btn btn-primary ml-2"
+                            onClick={handleSearch}
+                            style={{ margin: '8px' }}
+                        >
+                            Search
+                        </button>
+                    </div>
+                )}
                 <table className="table table-bordered table-striped">
                     <thead className="thead-dark">
                         <tr>
@@ -214,7 +220,8 @@ const Database = () => {
                     />
                 </div>
             </div>
-        </div></>
+        </div>
     );
 };
+
 export default Database;
