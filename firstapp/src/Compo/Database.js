@@ -33,51 +33,64 @@ const Database = () => {
         setCurrentPage(selected);
     };
 
-    const handleSearch = () => {
-        setIsSearchPerformed(true);
-        const searchTerms = searchTerm.toLowerCase().trim();
+  const handleSearch = () => {
+    setIsSearchPerformed(true);
+    const searchTerms = searchTerm.toLowerCase().trim();
 
-        if (searchTerms.length === 0) {
-            setFilteredData([]);
-            return;
-        }
+    console.log('searchTerm:', searchTerms);
 
-        const conditions = searchTerms.split(',');
+    if (searchTerms.length === 0) {
+        
+        setFilteredData([]);
+        return;
+    }
 
-        const searchObject = {};
-        conditions.forEach((condition) => {
-            const [field, operator, value] = condition.split(/([><=]+)/).map((str) => str.trim());
+    const conditions = searchTerms.split(',');
 
-            if (field && operator && value) {
-                if (field.toLowerCase() === 'nickname' || field.toLowerCase() === 'hobbies') {
-                    const values = value.split(',').map((v) => v.trim());
-                    searchObject[field] = { operator, values };
-                } else {
-                    searchObject[field] = { operator, value };
-                }
+    const searchObject = {};
+    conditions.forEach((condition) => {
+        const [field, operator, value] = condition.split(/([><=]+)/).map((str) => str.trim());
+
+        console.log('field:', field);
+        console.log('operator:', operator);
+        console.log('value:', value);
+
+        if (field && operator && value) {
+            if (field.toLowerCase() === 'nickname' || field.toLowerCase() === 'hobbies') {
+                const values = value.split(',').map((v) => v.trim());
+                searchObject[field] = { operator, values };
+            } else {
+                searchObject[field] = { operator, value };
             }
-        });
+        }
+    });
 
-        setFilteredData(
-            data.filter((item) => {
-                return Object.keys(searchObject).every((field) => {
-                    const itemValue = item[field] && item[field].toString().toLowerCase();
+    console.log('searchObject:', searchObject);
 
-                    if (Array.isArray(searchObject[field].values)) {
-                        return searchObject[field].values.some((val) => itemValue.includes(val));
-                    } else {
-                        if (searchObject[field].operator === '>') {
-                            return parseFloat(itemValue) > parseFloat(searchObject[field].value);
-                        } else if (searchObject[field].operator === '<') {
-                            return parseFloat(itemValue) < parseFloat(searchObject[field].value);
-                        } else if (searchObject[field].operator === '=') {
-                            return itemValue === searchObject[field].value;
-                        }
+    setFilteredData(
+        data.filter((item) => {
+            return Object.keys(searchObject).every((field) => {
+                const itemValue = item[field] && item[field].toString().toLowerCase();
+
+                console.log('field:', field);
+                console.log('itemValue:', itemValue);
+
+                if (Array.isArray(searchObject[field].values)) {
+                    return searchObject[field].values.some((val) => itemValue.includes(val));
+                } else {
+                    if (searchObject[field].operator === '>') {
+                        return parseFloat(itemValue) > parseFloat(searchObject[field].value);
+                    } else if (searchObject[field].operator === '<') {
+                        return parseFloat(itemValue) < parseFloat(searchObject[field].value);
+                    } else if (searchObject[field].operator === '=') {
+                        return itemValue === searchObject[field].value;
                     }
-                });
-            })
-        );
-    };
+                }
+            });
+        })
+    );
+};
+
 
     const offset = currentPage * entriesPerPage;
     const allDataEntries = isSearchPerformed ? filteredData : data;

@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import * as XLSX from 'xlsx';
 import ReactPaginate from 'react-paginate';
+// import html2canvas from 'html2canvas';
+// import jsPDF from 'jspdf';
+import html2pdf from 'html2pdf.js';
 import FileU from './FileU';
 
 const File = () => {
@@ -82,7 +85,7 @@ const File = () => {
                         const columnIndex = headers.indexOf(option);
                         filteredRow[label] = row[columnIndex];
                     } else {
-                        filteredRow[label] = null; // Assign null for fields with no selected option
+                        filteredRow[label] = null;
                     }
                 });
                 return filteredRow;
@@ -104,12 +107,18 @@ const File = () => {
             return excelData;
         }
 
+        const searchTerms = searchQuery.toLowerCase().split(',').map(term => term.trim());
+
         return excelData.filter((row) => {
-            return Object.values(row).some(
-                (value) =>
-                    typeof value === 'string' &&
-                    value.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+            return searchTerms.every(searchTerm => {
+                return Object.values(row).some((value) => {
+                    if (typeof value === 'string' || typeof value === 'number') {
+                        const stringValue = String(value).toLowerCase();
+                        return stringValue.includes(searchTerm);
+                    }
+                    return false;
+                });
+            });
         });
     };
 
@@ -122,6 +131,28 @@ const File = () => {
         const endIndex = startIndex + itemsPerPage;
         return filterDataBySearchQuery().slice(startIndex, endIndex);
     };
+
+    const tableRef = useRef(null);
+
+    const handleDownloadPDF = () => {
+        const input = tableRef.current;
+
+        html2pdf(input, {
+            margin: 10,
+            filename: 'table.pdf',
+            image: { type: 'jpeg', quality: 1.0 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        });
+    };
+
+    const handleDownloadExcel = () => {
+        const ws = XLSX.utils.json_to_sheet(filterDataBySearchQuery());
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Sheet 1');
+        XLSX.writeFile(wb, 'table.xlsx');
+    };
+
     if (permissions.includes('N')) {
         return (
             <div className="container mt-5">
@@ -135,125 +166,139 @@ const File = () => {
 
     return (
         <>
-        {permissions.includes('RW') ?<div className="container mt-5">
-            <h1 style={{ marginBottom: '20px', fontWeight: 'bold' }}>File Upload</h1>
-            <div className="p-4 border rounded">
-                <label htmlFor="excelFile">Upload Excel File:</label>
-                <input type="file" id="excelFile" accept=".xlsx, .xls" onChange={handleFileUpload} />
+            {permissions.includes('RW') ? (
+                <div className="container mt-5">
+                    <h1 style={{ marginBottom: '20px', fontWeight: 'bold' }}>File Upload</h1>
+                    <div className="p-4 border rounded">
+                        <label htmlFor="excelFile">Upload Excel File:</label>
+                        <input type="file" id="excelFile" accept=".xlsx, .xls" onChange={handleFileUpload} />
 
-                <button
-                    className="btn btn-primary mt-2"
-                    onClick={handleShowHeadings}
-                    disabled={!excelFile}
-                >
-                    Show Headings
-                </button>
+                        <button
+                            className="btn btn-primary mt-2"
+                            onClick={handleShowHeadings}
+                            disabled={!excelFile}
+                        >
+                            Show Headings
+                        </button>
 
-                {showDropdowns && (
-                    <div className="modal show" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-                        <div className="modal-dialog" role="document">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h5 className="modal-title">Select Headings</h5>
-                                    <button
-                                        type="button"
-                                        className="close"
-                                        data-dismiss="modal"
-                                        aria-label="Close"
-                                        onClick={() => setShowDropdowns(false)}
-                                    >
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div className="modal-body">
-                                    {dropdownOptions.map((options, index) => (
-                                        <div key={index} className="mt-2">
-                                            <label>{`${manualDropdownLabels[index]}:`}</label>
-                                            <select
-                                                value={selectedOptions[index] || ''}
-                                                onChange={(event) => handleDropdownChange(index, event)}
-                                                className="form-select"
+                        {showDropdowns && (
+                            <div className="modal show" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+                                <div className="modal-dialog" role="document">
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title">Select Headings</h5>
+                                            <button
+                                                type="button"
+                                                className="close"
+                                                data-dismiss="modal"
+                                                aria-label="Close"
+                                                onClick={() => setShowDropdowns(false)}
                                             >
-                                                <option value="" disabled>
-                                                    Select a heading
-                                                </option>
-                                                {options.map((heading, headingIndex) => (
-                                                    <option key={headingIndex} value={heading}>
-                                                        {heading}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
                                         </div>
-                                    ))}
-                                </div>
-                                <div className="modal-footer">
-                                    <button
-                                        type="button"
-                                        className="btn btn-success"
-                                        onClick={handleShowContent}
-                                    >
-                                        Show Content
-                                    </button>
+                                        <div className="modal-body">
+                                            {dropdownOptions.map((options, index) => (
+                                                <div key={index} className="mt-2">
+                                                    <label>{`${manualDropdownLabels[index]}:`}</label>
+                                                    <select
+                                                        value={selectedOptions[index] || ''}
+                                                        onChange={(event) => handleDropdownChange(index, event)}
+                                                        className="form-select"
+                                                    >
+                                                        <option value="" disabled>
+                                                            Select a heading
+                                                        </option>
+                                                        {options.map((heading, headingIndex) => (
+                                                            <option key={headingIndex} value={heading}>
+                                                                {heading}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button
+                                                type="button"
+                                                className="btn btn-success"
+                                                onClick={handleShowContent}
+                                            >
+                                                Show Content
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        )}
+
+                        {excelFile && (
+                            <p className="mt-3">{`Uploaded Excel File: ${excelFile.name}`}</p>
+                        )}
+
+                        {/* Search functionality */}
+                        <div className="mt-3">
+                            <label htmlFor="searchQuery">Search:</label>
+                            <input
+                                type="text"
+                                id="searchQuery"
+                                value={searchQuery}
+                                onChange={handleSearchChange}
+                                className="form-control"
+                            />
                         </div>
-                    </div>
-                )}
 
-                {excelFile && (
-                    <p className="mt-3">{`Uploaded Excel File: ${excelFile.name}`}</p>
-                )}
+                        {/* Download buttons */}
+                        <div className="mt-4">
+                            <button className="btn btn-primary" onClick={handleDownloadPDF}>
+                                Download PDF
+                            </button>
+                            <button className="btn btn-success ml-2" onClick={handleDownloadExcel}>
+                                Download Excel
+                            </button>
+                        </div>
 
-                {/* Search functionality */}
-                <div className="mt-3">
-                    <label htmlFor="searchQuery">Search:</label>
-                    <input
-                        type="text"
-                        id="searchQuery"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                        className="form-control"
-                    />
-                </div>
-
-                {/* Display paginated data */}
-                {filterDataBySearchQuery().length > 0 && (
-                    <div className="mt-4">
-                        <p>Content:</p>
-                        <table className="table table-bordered">
-                            <thead>
-                                <tr>
-                                    {manualDropdownLabels.map((label, index) => (
-                                        <th key={index}>{label}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {getPaginatedData().map((row, rowIndex) => (
-                                    <tr key={rowIndex}>
-                                        {manualDropdownLabels.map((label, index) => (
-                                            <td key={index}>{row[label]}</td>
+                        {/* Display paginated data */}
+                        {filterDataBySearchQuery().length > 0 && (
+                            <div className="mt-4" ref={tableRef}>
+                                <p>Content:</p>
+                                <table className="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            {manualDropdownLabels.map((label, index) => (
+                                                <th key={index}>{label}</th>
+                                            ))}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {getPaginatedData().map((row, rowIndex) => (
+                                            <tr key={rowIndex}>
+                                                {manualDropdownLabels.map((label, index) => (
+                                                    <td key={index}>{row[label]}</td>
+                                                ))}
+                                            </tr>
                                         ))}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        <ReactPaginate
-                            pageCount={Math.ceil(filterDataBySearchQuery().length / itemsPerPage)}
-                            onPageChange={handlePageChange}
-                            containerClassName="pagination"
-                            pageClassName="page-item"
-                            pageLinkClassName="page-link"
-                            activeClassName="active"
-                            previousClassName="page-item"
-                            nextClassName="page-item"
-                            previousLinkClassName="page-link"
-                            nextLinkClassName="page-link"
-                        />
+                                    </tbody>
+                                </table>
+                                <ReactPaginate
+                                    pageCount={Math.ceil(filterDataBySearchQuery().length / itemsPerPage)}
+                                    onPageChange={handlePageChange}
+                                    containerClassName="pagination"
+                                    pageClassName="page-item"
+                                    pageLinkClassName="page-link"
+                                    activeClassName="active"
+                                    previousClassName="page-item"
+                                    nextClassName="page-item"
+                                    previousLinkClassName="page-link"
+                                    nextLinkClassName="page-link"
+                                />
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-        </div>:<FileU/>}
+                </div>
+            ) : (
+                <FileU />
+            )}
         </>
     );
 };

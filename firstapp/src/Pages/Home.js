@@ -9,13 +9,10 @@ function Home() {
     const userType = localStorage.getItem('userType');
 
     return (
-        <>
-            <div className="container mt-2">
+        <><div style={{ backgroundColor: "#F8C97D", height: "100vh", width: "100vw" }}>
+            <div className="container mt-2" >
                 <div><Link to='/profile' style={{ textDecoration: "none" }}><div style={{ marginLeft: "1280px", }}><img src={img1} alt='error' style={{ height: "120px", width: "100px" }} /></div><div style={{ marginLeft: "1310px", marginTop: "-25px" }}><p style={{ color: "black" }}>Profile</p></div>
                 </Link></div>
-
-
-
                 <h1 className="text-center" style={{ color: '#358ddc', fontWeight: "bold", marginBottom: "30px", fontSize: "55px" }}>Data Container</h1>
 
                 <h4 className="text-center mb-3" style={{ padding: "20px" }}>Please select any option...</h4>
@@ -34,7 +31,7 @@ function Home() {
 
                     </div>
                     <div className="col-md-4" style={{ color: "white", }}>
-                        <button className="btn btn-outline-warning btn-lg btn-block" >
+                        <button className="btn btn-outline-secondary btn-lg btn-block" >
                             <Link to="/edata" style={{ color: "black", textDecoration: "none" }}>Database</Link>
                         </button>
 
@@ -47,12 +44,9 @@ function Home() {
                         </div>
                     )}
 
-
-
-
-
                 </div>
             </div>
+        </div>
         </>
     );
 }

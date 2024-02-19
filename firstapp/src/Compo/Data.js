@@ -24,21 +24,26 @@ function Data() {
         e.preventDefault();
         const { name, surname, age, mobile, city, email, profession, nickname, hobbies } = form;
 
-
         if (!/^\d{10}$/.test(mobile)) {
             alert('Please enter a valid 10-digit mobile number');
             return;
         }
 
+        if (parseInt(age, 10) <= 0) {
+            alert('Please enter a valid age greater than 0');
+            return;
+        }
 
         if (!emailRegex.test(email)) {
             alert('Please enter a valid email address');
             return;
         }
+
         if (mobileNumbers.includes(mobile)) {
             alert('Mobile number already exists');
             return;
         }
+
         console.log(name, surname, age, mobile, city, email, profession, nickname, hobbies);
 
         try {
@@ -50,6 +55,7 @@ function Data() {
         } catch (error) {
             console.log(error);
         }
+
         setForm({
             name: '',
             surname: '',
