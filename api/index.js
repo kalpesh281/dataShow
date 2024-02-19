@@ -52,9 +52,9 @@ app.post("/register", async (req, res) => {
             return res.send({ error: "User Exists" });
         }
 
-        let permissions = ['N'];  
-        if (userType=== 'Admin') {
-            permissions = ['RW'];  
+        let permissions = ['N'];
+        if (userType === 'Admin') {
+            permissions = ['RW'];
         }
 
         await User.create({
@@ -89,7 +89,7 @@ app.post("/login", async (req, res) => {
 
 
         if (user.userType === 'Admin') {
-            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'Admin', role: user.role, email: user.email, department: user.department, permissions:user.permissions } });
+            return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'Admin', role: user.role, email: user.email, department: user.department, permissions: user.permissions } });
         } else {
             return res.json({ status: 'ok', data: { token: token, fname: user.fname, lname: user.lname, userType: 'User', role: user.role, email: user.email, department: user.department, permissions: user.permissions } });
         }
@@ -176,7 +176,6 @@ app.post("/ipdata", async (req, res) => {
 app.get("/ipdata/all", async (req, res) => {
     try {
         const allData = await IP.find();
-        // console.log(allData)
         return res.status(200).json(allData)
     } catch (error) {
         console.error(error);
