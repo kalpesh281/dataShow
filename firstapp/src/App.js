@@ -20,7 +20,7 @@ import Profile from "./Pages/Profile";
 
 function App() {
 
-  // const userType = localStorage.getItem('userType');
+
  
 
 
@@ -29,15 +29,11 @@ function App() {
       <div className="App">
         <Router>
           <Routes>
-            {/* isAuthenticated={isLoggedIn} */}
-
-
             <Route exact path="/" element={<Private><Home /></Private>} />
             <Route path="/edata" element={<Private><Database /></Private>} />
             <Route path="/ipdata" element={<Private><Data /></Private>} />
             <Route path="/file" element={<Private><File /></Private>} />
-            {/* <Route path="/userpage" element={<Private><UserHome /></Private>} /> */}
-
+          
             <Route path="/profile" element={<Private><Profile/></Private>} />
 
             <Route path="/panel" element={<AdminPanel />} />

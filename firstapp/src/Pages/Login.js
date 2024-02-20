@@ -23,7 +23,6 @@ const LoginPage = () => {
             alert("Please Enter Valid Email")
         }
 
-        // console.log(email, password);
 
         try {
             const response = await fetch('http://localhost:8000/login', {
