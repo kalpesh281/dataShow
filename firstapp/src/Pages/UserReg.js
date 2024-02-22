@@ -1,32 +1,29 @@
 import React, { useState } from 'react';
-import Navbar from './Navbar';
 
-const RegisterPage = () => {
+const UserReq = () => {
     const [formData, setFormData] = useState({
         fname: '',
         lname: '',
         email: '',
-        password: '',
+
         department: ''
     });
-
     const [role, setRole] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const { fname, lname, email, department } = formData;
 
-        const { fname, lname, email, password, department } = formData;
-
-        if (fname === '' || lname === '' || email === '' || password === '' || department === '' || role === '') {
+        if (fname === '' || lname === '' || email === '' || department === '' || role === '') {
             alert('Please enter all the data first');
             return;
         }
 
-        console.log(fname, lname, email, password);
+        console.log(fname, lname, email,);
 
         try {
-            const response = await fetch('http://localhost:8000/register', {
+            const response = await fetch('http://localhost:8000/userR', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,16 +33,22 @@ const RegisterPage = () => {
                     fname,
                     lname,
                     email,
-                    password,
                     role,
                     department
                 }),
             });
 
             const data = await response.json();
-            console.log(data, 'Admin Registered');
-            window.alert('Admin Registered successfully...');
-            window.location.href = '/login';
+            console.log(data, 'User Registered');
+            window.alert('User On-Board successfully...');
+            setFormData({
+                fname: '',
+                lname: '',
+                email: '',
+                department: '',
+            });
+            setRole('')
+
         } catch (error) {
             console.error('Error during registration:', error.message);
         }
@@ -54,19 +57,17 @@ const RegisterPage = () => {
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
     const handleRole = (e) => {
         setRole(e.target.value);
-    }
+    };
 
-    return (<>
-        <Navbar />
+    return (
         <div className="container mt-5">
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <form onSubmit={handleSubmit}>
-                        <h2 className="mb-4">Admin Register</h2>
-
-
+                        <h2 className="mb-4">On-Board User</h2>
 
                         <div className="mb-3">
                             <label className="form-label">First name:</label>
@@ -128,37 +129,20 @@ const RegisterPage = () => {
                             />
                         </div>
 
-                        <div className="mb-3">
-                            <label className="form-label">Password:</label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                placeholder="Enter Password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                            />
-                        </div>
+
 
                         <div className="d-grid">
                             <button type="submit" className="btn btn-primary">
-                                Sign up
+                                Register
                             </button>
                         </div>
 
-                        <p className="mt-3">
-                            Already have an account?{' '}
-                            <a href="/login" className="text-primary">
-                                Login.
-                            </a>
-                        </p>
+
                     </form>
                 </div>
             </div>
         </div>
-    </>
-
     );
 };
 
-export default RegisterPage;
+export default UserReq;

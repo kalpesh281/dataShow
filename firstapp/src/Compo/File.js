@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import ReactPaginate from 'react-paginate';
 // import html2canvas from 'html2canvas';
 // import jsPDF from 'jspdf';
-import html2pdf from 'html2pdf.js';
+// import html2pdf from 'html2pdf.js';
 import FileU from './FileU';
 
 const File = () => {
@@ -134,17 +134,17 @@ const File = () => {
 
     const tableRef = useRef(null);
 
-    const handleDownloadPDF = () => {
-        const input = tableRef.current;
+    // const handleDownloadPDF = () => {
+    //     const input = tableRef.current;
 
-        html2pdf(input, {
-            margin: 10,
-            filename: 'table.pdf',
-            image: { type: 'jpeg', quality: 1.0 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        });
-    };
+    //     html2pdf(input, {
+    //         margin: 10,
+    //         filename: 'table.pdf',
+    //         image: { type: 'jpeg', quality: 1.0 },
+    //         html2canvas: { scale: 2 },
+    //         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    //     });
+    // };
 
     const handleDownloadExcel = () => {
         const ws = XLSX.utils.json_to_sheet(filterDataBySearchQuery());
@@ -250,12 +250,13 @@ const File = () => {
 
                         {/* Download buttons */}
                         <div className="mt-4">
-                            <button className="btn btn-primary" onClick={handleDownloadPDF}>
-                                Download PDF
-                            </button>
-                            <button className="btn btn-success ml-2" onClick={handleDownloadExcel}>
-                                Download Excel
-                            </button>
+                            {filterDataBySearchQuery().length > 0 && (
+                                <>
+                                    <button className="btn btn-success ml-2" onClick={handleDownloadExcel}>
+                                        Download Excel
+                                    </button>
+                                </>
+                            )}
                         </div>
 
                         {/* Display paginated data */}

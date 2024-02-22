@@ -1,21 +1,29 @@
 import React, { useState } from 'react';
+import Navbar from './Navbar';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
-        role: ''
+
     });
+    const [recaptchaValue, setRecaptchaValue] = useState(null);
     window.localStorage.setItem("token", "");
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { email, password, role } = formData;
+        if (!recaptchaValue) {
+            alert('Please complete the reCAPTCHA');
+            return;
+        }
+
+        const { email, password } = formData;
 
 
-        if (email === '' || password === '' || role === '') {
+        if (email === '' || password === '') {
             alert('Please enter the data first');
             return;
         }
@@ -36,7 +44,7 @@ const LoginPage = () => {
                 body: JSON.stringify({
                     email,
                     password,
-                    role,
+
                 }),
             });
 
@@ -46,12 +54,12 @@ const LoginPage = () => {
             if (data.status === 'ok') {
                 const { token, userType, role, email, department, fname, lname, permissions } = data.data;
 
-                // Store user data in localStorage
+
                 window.localStorage.setItem('token', token);
                 window.localStorage.setItem('role', JSON.stringify(role));
                 window.localStorage.setItem('password', password);
                 window.localStorage.setItem('loggedIn', true);
-                // window.localStorage.setItem('userRole', inputRole);
+
                 window.localStorage.setItem("role", role)
                 window.localStorage.setItem('userType', userType);
                 window.localStorage.setItem('email', email);
@@ -65,7 +73,6 @@ const LoginPage = () => {
                     alert('Login successful Admin');
                 } else {
                     alert('Login successful User');
-                    // window.location.href = '/userpage';
                 }
                 window.location.href = '/';
             }
@@ -80,6 +87,7 @@ const LoginPage = () => {
 
     return (
         <>
+            <Navbar />
             <div className="container mt-5">
                 <div className="row justify-content-center">
                     <div className="col-md-6">
@@ -93,14 +101,7 @@ const LoginPage = () => {
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                 />
                             </div>
-                            <div className="mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    placeholder="Role"
-                                    onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                                />
-                            </div>
+
                             <div className="mb-3">
                                 <input
                                     type="password"
@@ -109,12 +110,15 @@ const LoginPage = () => {
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                 />
                             </div>
-
+                            <div className="mb-3">
+                                <ReCAPTCHA
+                                    sitekey="6LdX8nspAAAAAJ9lJSXC4XsBz1ErIKxD26qkymmW"
+                                    onChange={(value) => setRecaptchaValue(value)}
+                                />
+                            </div>
                             <div className="d-grid">
                                 <button type="submit" className="btn btn-primary">Login</button>
                             </div>
-
-                            <p className="mt-3">Don't have an account yet? <a href="/register">Register</a></p>
                         </form>
                     </div>
                 </div>

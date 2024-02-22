@@ -36,12 +36,20 @@ function Home() {
                         </button>
 
                     </div>
-                    {userType === 'Admin' && (
+                    {userType === 'Admin' && (<>
                         <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}>
                             <button className="btn btn-outline-success btn-lg btn-block">
-                                <Link to="panel" style={{ color: "black", textDecoration: "none" }}>List Of User</Link>
+                                <Link to="/panel" style={{ color: "black", textDecoration: "none" }}>List Of User</Link>
                             </button>
                         </div>
+                        <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}>
+                            <button className="btn btn-outline-success btn-lg btn-block">
+                                <Link to="/adduser" style={{ color: "black", textDecoration: "none" }}>On Board</Link>
+                            </button>
+                        </div>
+                    </>
+                        
+                        
                     )}
 
                 </div>

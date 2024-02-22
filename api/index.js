@@ -8,7 +8,7 @@ const path = require('path');
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser')
 const fileUpload = require("express-fileupload")
-
+const recaptcha = require('express-recaptcha');
 
 const fs = require('fs');
 const fastcsv = require('fast-csv');
@@ -38,7 +38,6 @@ app.listen(8000, () => {
 })
 
 
-
 require("./userData");
 const User = mongoose.model("UserInfo");
 
@@ -62,7 +61,7 @@ app.post("/register", async (req, res) => {
             lname,
             email,
             password: encryptedPassword,
-            userType,
+            userType: "Admin",
             role,
             department,
             permissions,
@@ -96,6 +95,44 @@ app.post("/login", async (req, res) => {
     }
     return res.json({ status: "error", error: "Invalid password" })
 });
+
+// recaptcha.init('6LdX8nspAAAAAJ9lJSXC4XsBz1ErIKxD26qkymmW', '6LdX8nspAAAAACVgIhoKv7Fl70nCOcyElQVpWsqe');
+
+// app.post("/login", recaptcha.middleware.verify, async (req, res) => {
+//     const { email, password } = req.body;
+
+//     try {
+//         const user = await User.findOne({ email });
+
+//         if (!user) {
+//             return res.status(404).json({ status: 'error', error: 'User not found' });
+//         }
+
+//         const isPasswordValid = await bcrypt.compare(password, user.password);
+
+//         if (isPasswordValid) {
+//             const token = jwt.sign({ email: user.email }, JWT_SECRET);
+
+//             const responseData = {
+//                 token,
+//                 fname: user.fname,
+//                 lname: user.lname,
+//                 userType: user.userType,
+//                 role: user.role,
+//                 email: user.email,
+//                 department: user.department,
+//                 permissions: user.permissions,
+//             };
+
+//             return res.json({ status: 'ok', data: responseData });
+//         } else {
+//             return res.status(401).json({ status: 'error', error: 'Invalid password' });
+//         }
+//     } catch (error) {
+//         console.error('Error during login:', error.message);
+//         return res.status(500).json({ status: 'error', error: 'Internal Server Error' });
+//     }
+// });
 
 const fileSchema = new mongoose.Schema({
     fileName: String,
@@ -184,7 +221,9 @@ app.get("/ipdata/all", async (req, res) => {
 })
 
 
+
 app.get('/users', async (req, res) => {
+
     try {
         const users = await User.find({}, 'fname lname email role userType department permissions');
         res.json(users);
@@ -192,6 +231,7 @@ app.get('/users', async (req, res) => {
         console.error('Error fetching users:', error.message);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+
 });
 app.get('/info', async (req, res) => {
     // const { email, permission } = req.body
@@ -215,3 +255,95 @@ app.post('/permission', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+
+require("./addUser")
+const UserR = mongoose.model("UserReq")
+
+app.post("/userR", async (req, res) => {
+    const { fname, lname, email, userType, role, department } = req.body;
+
+
+    try {
+        const oldUser = await UserR.findOne({ email });
+        if (oldUser) {
+            return res.send({ error: "User Exists" });
+        }
+
+        let permissions = ['N'];
+        if (userType === 'Admin') {
+            permissions = ['RW'];
+        }
+
+        await UserR.create({
+            fname,
+            lname,
+            email,
+            userType: "User",
+            role,
+            department,
+            permissions,
+        });
+
+        res.send({ status: "ok" });
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.send({ status: "error" });
+    }
+});
+const { check, validationResult } = require('express-validator');
+
+
+app.post('/setpass', [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Please enter a password with at least 16 characters, one capital letter, one digit, and one special character')
+        .isLength({ min: 16 })
+        .matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{16,}$/),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body;
+
+    try {
+        // Check if the user exists
+        let user = await User.findOne({ email }).exec();
+
+        if (!user) {
+            return res.status(400).json({ errors: [{ msg: 'User not found' }] });
+        }
+
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Update user's password
+        user.password = hashedPassword;
+
+        // Save the user
+        await user.save();
+
+        res.json({ msg: 'Password set successfully' });
+    } catch (error) {
+        console.error('Error setting password:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/usersR', async (req, res) => {
+    try {
+        const users = await UserR.find({}, 'fname lname email role userType department permissions');
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error.message);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+
+
+
+
