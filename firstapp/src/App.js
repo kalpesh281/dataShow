@@ -19,6 +19,7 @@ import Profile from "./Pages/Profile";
 import UserReq from "./Pages/UserReg";
 import SetPasscode from "./Pages/SetPasscode";
 import Navbar from "./Pages/Navbar";
+import Reset from "./Pages/Reset";
 
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
             <Route path="/ipdata" element={<Private><Data /></Private>} />
             <Route path="/file" element={<Private><File /></Private>} />
             <Route path="/adduser" element={<Private> <UserReq /></Private>} />
+            <Route path="/reset" element={<Private> <Reset /></Private>} />
             <Route path="/profile" element={<Private><Profile /></Private>} />
 
             <Route path="/panel" element={<AdminPanel />} />

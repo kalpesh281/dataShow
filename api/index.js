@@ -96,43 +96,7 @@ app.post("/login", async (req, res) => {
     return res.json({ status: "error", error: "Invalid password" })
 });
 
-// recaptcha.init('6LdX8nspAAAAAJ9lJSXC4XsBz1ErIKxD26qkymmW', '6LdX8nspAAAAACVgIhoKv7Fl70nCOcyElQVpWsqe');
 
-// app.post("/login", recaptcha.middleware.verify, async (req, res) => {
-//     const { email, password } = req.body;
-
-//     try {
-//         const user = await User.findOne({ email });
-
-//         if (!user) {
-//             return res.status(404).json({ status: 'error', error: 'User not found' });
-//         }
-
-//         const isPasswordValid = await bcrypt.compare(password, user.password);
-
-//         if (isPasswordValid) {
-//             const token = jwt.sign({ email: user.email }, JWT_SECRET);
-
-//             const responseData = {
-//                 token,
-//                 fname: user.fname,
-//                 lname: user.lname,
-//                 userType: user.userType,
-//                 role: user.role,
-//                 email: user.email,
-//                 department: user.department,
-//                 permissions: user.permissions,
-//             };
-
-//             return res.json({ status: 'ok', data: responseData });
-//         } else {
-//             return res.status(401).json({ status: 'error', error: 'Invalid password' });
-//         }
-//     } catch (error) {
-//         console.error('Error during login:', error.message);
-//         return res.status(500).json({ status: 'error', error: 'Internal Server Error' });
-//     }
-// });
 
 const fileSchema = new mongoose.Schema({
     fileName: String,
@@ -344,6 +308,30 @@ app.get('/usersR', async (req, res) => {
 
 
 
+app.post("/delpass", async (req, res) => {
+    const { email ,userType} = req.body;
 
+    try {
+        // Find the user by email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Check userType and only allow password reset if userType is not 'admin'
+        if (user.userType === 'Admin') {
+            return res.status(403).json({ message: "Password reset not allowed for admin users" });
+        }
+
+        // Update the password field to null
+        const result = await UserInfo.findOneAndUpdate({ email }, { $unset: { password: 1 } }, { new: true });
+
+        return res.status(200).json({ message: "Password deleted successfully" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
 
 

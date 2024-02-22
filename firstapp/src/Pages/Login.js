@@ -75,10 +75,12 @@ const LoginPage = () => {
                     alert('Login successful User');
                 }
                 window.location.href = '/';
-            }
+            } else {
+                // Display an alert for invalid password
+                alert('Invalid password. Please enter a valid password.');
         }
 
-        catch (error) {
+    }catch (error) {
             console.error('Error during login:', error.message);
         }
     };
@@ -99,6 +101,7 @@ const LoginPage = () => {
                                     className="form-control"
                                     placeholder="E-mail"
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+
                                 />
                             </div>
 

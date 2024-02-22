@@ -47,9 +47,14 @@ function Home() {
                                 <Link to="/adduser" style={{ color: "black", textDecoration: "none" }}>On Board</Link>
                             </button>
                         </div>
+                        <div className="col-md-4" style={{ color: "white", marginTop: "20px" }}>
+                            <button className="btn btn-outline-success btn-lg btn-block">
+                                <Link to="/reset" style={{ color: "black", textDecoration: "none" }}>Reset User Password</Link>
+                            </button>
+                        </div>
                     </>
-                        
-                        
+
+
                     )}
 
                 </div>
