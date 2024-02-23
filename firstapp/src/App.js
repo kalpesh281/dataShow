@@ -20,6 +20,7 @@ import UserReq from "./Pages/UserReg";
 import SetPasscode from "./Pages/SetPasscode";
 import Navbar from "./Pages/Navbar";
 import Reset from "./Pages/Reset";
+import Mail from "./Pages/Mail";
 
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
             <Route path="/navbar" element={<Navbar />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/mail" element={<Mail />} />
             <Route path="/setpass" element={<SetPasscode />} />
           </Routes>
         </Router>

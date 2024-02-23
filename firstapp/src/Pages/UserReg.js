@@ -48,6 +48,7 @@ const UserReq = () => {
                 department: '',
             });
             setRole('')
+            window.location.href = '/';
 
         } catch (error) {
             console.error('Error during registration:', error.message);

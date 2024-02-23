@@ -30,6 +30,11 @@ const Navbar = () => {
                                 Set User Password
                             </Link>
                         </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to="/mail">
+                                Admin Contact
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </div>

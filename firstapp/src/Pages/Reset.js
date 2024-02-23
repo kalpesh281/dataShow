@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Reset = () => {
     const [email, setEmail] = useState('');
@@ -8,25 +8,28 @@ const Reset = () => {
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
     };
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        alert("Please enter a valid email address");
-        return;
-    }
 
 
     const handleButtonClick = async () => {
+        if (email === '') {
+            alert('Please enter the user email');
+            return;
+        }
+        if (!email) {
+            alert("Please Enter Valid Email")
+        }
         try {
             const response = await axios.post('http://localhost:8000/delpass', { email });
 
+            console.log('Password deleted successfully');
             // Check if the user type is 'admin'
             if (response.data && response.data.userType === 'Admin') {
-                alert("You have not reset the password of Admin");
+                alert("You have not reset the password of an admin type user");
                 return;
             }
 
             alert(" User Password Reset successfully")
-
+            setEmail("")
         } catch (error) {
             console.error('Error deleting password:', error.message);
         }
@@ -48,7 +51,7 @@ const Reset = () => {
                     />
                 </div>
                 <button type="button" className="btn btn-primary" onClick={handleButtonClick}>
-                    Submit
+                    Reset
                 </button>
             </form>
         </div>

@@ -7,6 +7,7 @@ app.use(express.json());
 const path = require('path');
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser')
+const nodemailer = require('nodemailer');
 const fileUpload = require("express-fileupload")
 const recaptcha = require('express-recaptcha');
 
@@ -239,7 +240,7 @@ app.post("/userR", async (req, res) => {
             permissions = ['RW'];
         }
 
-        await UserR.create({
+        await User.create({
             fname,
             lname,
             email,
@@ -257,12 +258,12 @@ app.post("/userR", async (req, res) => {
 });
 const { check, validationResult } = require('express-validator');
 
-
+const passwordValidator = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{16,}$/;
 app.post('/setpass', [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Please enter a password with at least 16 characters, one capital letter, one digit, and one special character')
         .isLength({ min: 16 })
-        .matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{16,}$/),
+        .matches(passwordValidator),
 ], async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -309,7 +310,7 @@ app.get('/usersR', async (req, res) => {
 
 
 app.post("/delpass", async (req, res) => {
-    const { email ,userType} = req.body;
+    const { email, userType } = req.body;
 
     try {
         // Find the user by email
@@ -325,7 +326,7 @@ app.post("/delpass", async (req, res) => {
         }
 
         // Update the password field to null
-        const result = await UserInfo.findOneAndUpdate({ email }, { $unset: { password: 1 } }, { new: true });
+        const result = await User.findOneAndUpdate({ email }, { $unset: { password: 1 } }, { new: true });
 
         return res.status(200).json({ message: "Password deleted successfully" });
     } catch (error) {
@@ -333,5 +334,39 @@ app.post("/delpass", async (req, res) => {
         return res.status(500).json({ message: "Internal Server Error" });
     }
 });
+
+
+
+app.post('/mail', async (req, res) => {
+    const { senderEmail, query } = req.body;
+    
+    // Create a nodemailer transporter
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'openkalp28@gmail.com', // Replace with your email
+            pass: 'nlmq ufpy wfel epvc', // Replace with your password
+        },
+    });
+
+    // Email options
+    const mailOptions = {
+        from: senderEmail, // Sender's email provided by the user
+        to: 'openkalp28@gmail.com', // Replace with admin email
+        subject: 'Problem',
+        text: `From: ${senderEmail}\n\n${query}`,
+    };
+
+    try {
+        console.log('Sending email...');
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent successfully!');
+        res.status(200).json({ message: 'Email sent successfully!' });
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).json({ message: 'Error sending email. Please try again later.' });
+    }
+});
+
 
 
